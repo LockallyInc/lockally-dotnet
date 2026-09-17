@@ -6,15 +6,15 @@
     <AssemblyName>Lockally.SDK</AssemblyName>
     <PackageId>Lockally.SDK</PackageId>
     <OutputType>Library</OutputType>
-    <Authors>OpenAPI</Authors>
-    <Company>OpenAPI</Company>
-    <AssemblyTitle>OpenAPI Library</AssemblyTitle>
-    <Description>A library generated from a OpenAPI doc</Description>
-    <Copyright>No Copyright</Copyright>
+    <Authors>Lockally</Authors>
+    <Company>Lockally</Company>
+    <AssemblyTitle>Lockally SDK</AssemblyTitle>
+    <Description>Official Lockally SDK for .NET: send email and manage domains, mailboxes and webhooks through the Lockally API.</Description>
+    <Copyright>Copyright (c) Lockally</Copyright>
     <RootNamespace>Lockally.SDK</RootNamespace>
-    <Version>0.1.0</Version>
+    <Version>0.1.1</Version>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Lockally.SDK.xml</DocumentationFile>
-    <RepositoryUrl>https://github.com/GIT_USER_ID/GIT_REPO_ID.git</RepositoryUrl>
+    <RepositoryUrl>https://github.com/lockallyinc/lockally-dotnet.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageReleaseNotes>Minor update</PackageReleaseNotes>
     <Nullable>enable</Nullable>
