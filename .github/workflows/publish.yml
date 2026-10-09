@@ -1,0 +1,32 @@
+# Release workflow for the .NET SDK (NuGet package `Lockally.SDK`).
+#
+# TEMPLATE — inert in this monorepo. Copy to `.github/workflows/publish.yml` in
+# the SDK's own repo (generated `sdk/csharp/` tree, pushed to
+# github.com/lockallyinc/lockally-dotnet). Tag-driven: push `vX.Y.Z`.
+#
+# One-time setup:
+#   - Add repo secret NUGET_API_KEY = a NuGet API key scoped to push
+#     `Lockally.SDK` (nuget.org → API Keys). Claude never handles this token.
+name: Publish NuGet
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.x'
+      - run: dotnet build src/Lockally.SDK/Lockally.SDK.csproj -c Release
+      - run: dotnet pack src/Lockally.SDK/Lockally.SDK.csproj -c Release -o dist
+      - name: Push to NuGet
+        run: dotnet nuget push "dist/*.nupkg" --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
