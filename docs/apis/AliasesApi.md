@@ -1,0 +1,121 @@
+# Lockally.SDK.Api.AliasesApi
+
+All URIs are relative to *https://api.lockally.com*
+
+| Method | HTTP request | Description |
+|--------|--------------|-------------|
+| [**CreateAlias**](AliasesApi.md#createalias) | **POST** /v1/aliases | Create an alias |
+| [**DeleteAlias**](AliasesApi.md#deletealias) | **DELETE** /v1/aliases/{address} | Delete an alias |
+| [**ListAliases**](AliasesApi.md#listaliases) | **GET** /v1/aliases | List aliases |
+
+<a id="createalias"></a>
+# **CreateAlias**
+> Alias CreateAlias (CreateAliasRequest createAliasRequest)
+
+Create an alias
+
+Creates an email alias. `alias_address` must be on a verified tenant-owned domain and must not be the address of an existing mailbox (live, suspended or deleted). `alias_target` must be an active mailbox in the same workspace; forwarding to an address Lockally does not host is not supported. The alias delivers as soon as the call returns. 
+
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **createAliasRequest** | [**CreateAliasRequest**](CreateAliasRequest.md) |  |  |
+
+### Return type
+
+[**Alias**](Alias.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json, application/problem+json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **201** | Alias created. |  -  |
+| **400** | Malformed request. |  -  |
+| **401** | Missing, malformed, or invalid API key. |  -  |
+| **403** | API key lacks the required scope. |  -  |
+| **409** | Alias address already exists, or is a mailbox&#39;s own address. |  -  |
+
+[[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
+
+<a id="deletealias"></a>
+# **DeleteAlias**
+> void DeleteAlias (string address)
+
+Delete an alias
+
+Hard-delete (no soft-delete window — aliases are cheap to recreate).
+
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **address** | **string** |  |  |
+
+### Return type
+
+void (empty response body)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/problem+json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **204** | Deleted. |  -  |
+| **401** | Missing, malformed, or invalid API key. |  -  |
+| **403** | API key lacks the required scope. |  -  |
+| **404** | Resource not found under the calling tenant. |  -  |
+
+[[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
+
+<a id="listaliases"></a>
+# **ListAliases**
+> ListAliases200Response ListAliases ()
+
+List aliases
+
+
+### Parameters
+This endpoint does not need any parameter.
+### Return type
+
+[**ListAliases200Response**](ListAliases200Response.md)
+
+### Authorization
+
+[bearerAuth](../README.md#bearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json, application/problem+json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Alias list. |  -  |
+| **401** | Missing, malformed, or invalid API key. |  -  |
+| **403** | API key lacks the required scope. |  -  |
+
+[[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
+

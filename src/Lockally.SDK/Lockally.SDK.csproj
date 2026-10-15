@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo> <!-- setting GenerateAssemblyInfo to false causes this bug https://github.com/dotnet/project-system/issues/3934 -->
+    <TargetFramework>net8.0</TargetFramework>
+    <AssemblyName>Lockally.SDK</AssemblyName>
+    <PackageId>Lockally.SDK</PackageId>
+    <OutputType>Library</OutputType>
+    <Authors>Lockally</Authors>
+    <Company>Lockally</Company>
+    <AssemblyTitle>Lockally SDK</AssemblyTitle>
+    <Description>Official Lockally SDK for .NET: send email and manage domains, mailboxes and webhooks through the Lockally API.</Description>
+    <Copyright>Copyright (c) Lockally</Copyright>
+    <RootNamespace>Lockally.SDK</RootNamespace>
+    <Version>0.3.1</Version>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Lockally.SDK.xml</DocumentationFile>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/lockallyinc/lockally-dotnet.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageReleaseNotes>Minor update</PackageReleaseNotes>
+    <Nullable>enable</Nullable>
+    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Http" Condition="'$(TargetFramework)' == 'net8.0'" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Condition="'$(TargetFramework)' == 'net8.0'" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Http.Polly" Condition="'$(TargetFramework)' == 'net8.0'" Version="8.0.20" />
+    <PackageReference Include="Microsoft.Net.Http.Headers" Condition="'$(TargetFramework)' == 'net8.0'" Version="8.0.17" />
+  </ItemGroup>
+
+</Project>
