@@ -98,6 +98,17 @@ namespace Lockally.SDK.Test.Api
         }
 
         /// <summary>
+        /// Test GetEncryptionStatus
+        /// </summary>
+        [Fact (Skip = "not implemented")]
+        public async Task GetEncryptionStatusAsyncTest()
+        {
+            var response = await _instance.GetEncryptionStatusAsync();
+            var model = response.Ok();
+            Assert.IsType<GetEncryptionStatus200Response>(model);
+        }
+
+        /// <summary>
         /// Test RotateEncryptionKey
         /// </summary>
         [Fact (Skip = "not implemented")]

@@ -34,29 +34,36 @@ namespace Lockally.SDK.Model
         /// <summary>
         /// Initializes a new instance of the <see cref="CreateEncryptionRecoveryRequest" /> class.
         /// </summary>
-        /// <param name="mailboxEmail">mailboxEmail</param>
         /// <param name="recoveryBlob">recoveryBlob</param>
+        /// <param name="mailboxEmail">mailboxEmail</param>
         [JsonConstructor]
-        public CreateEncryptionRecoveryRequest(string mailboxEmail, string recoveryBlob)
+        public CreateEncryptionRecoveryRequest(string recoveryBlob, Option<string?> mailboxEmail = default)
         {
-            MailboxEmail = mailboxEmail;
             RecoveryBlob = recoveryBlob;
+            MailboxEmailOption = mailboxEmail;
             OnCreated();
         }
 
         partial void OnCreated();
 
         /// <summary>
-        /// Gets or Sets MailboxEmail
-        /// </summary>
-        [JsonPropertyName("mailbox_email")]
-        public string MailboxEmail { get; set; }
-
-        /// <summary>
         /// Gets or Sets RecoveryBlob
         /// </summary>
         [JsonPropertyName("recovery_blob")]
         public string RecoveryBlob { get; set; }
+
+        /// <summary>
+        /// Used to track the state of MailboxEmail
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> MailboxEmailOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets MailboxEmail
+        /// </summary>
+        [JsonPropertyName("mailbox_email")]
+        public string? MailboxEmail { get { return this.MailboxEmailOption.Value; } set { this.MailboxEmailOption = new(value); } }
 
         /// <summary>
         /// Returns the string presentation of the object
@@ -66,8 +73,8 @@ namespace Lockally.SDK.Model
         {
             StringBuilder sb = new StringBuilder();
             sb.Append("class CreateEncryptionRecoveryRequest {\n");
-            sb.Append("  MailboxEmail: ").Append(MailboxEmail).Append("\n");
             sb.Append("  RecoveryBlob: ").Append(RecoveryBlob).Append("\n");
+            sb.Append("  MailboxEmail: ").Append(MailboxEmail).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -105,8 +112,8 @@ namespace Lockally.SDK.Model
 
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
-            Option<string?> mailboxEmail = default;
             Option<string?> recoveryBlob = default;
+            Option<string?> mailboxEmail = default;
 
             while (utf8JsonReader.Read())
             {
@@ -123,11 +130,11 @@ namespace Lockally.SDK.Model
 
                     switch (localVarJsonPropertyName)
                     {
-                        case "mailbox_email":
-                            mailboxEmail = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
                         case "recovery_blob":
                             recoveryBlob = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
+                        case "mailbox_email":
+                            mailboxEmail = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         default:
                             break;
@@ -135,19 +142,16 @@ namespace Lockally.SDK.Model
                 }
             }
 
-            if (!mailboxEmail.IsSet)
-                throw new ArgumentException("Property is required for class CreateEncryptionRecoveryRequest.", nameof(mailboxEmail));
-
             if (!recoveryBlob.IsSet)
                 throw new ArgumentException("Property is required for class CreateEncryptionRecoveryRequest.", nameof(recoveryBlob));
-
-            if (mailboxEmail.IsSet && mailboxEmail.Value == null)
-                throw new ArgumentNullException(nameof(mailboxEmail), "Property is not nullable for class CreateEncryptionRecoveryRequest.");
 
             if (recoveryBlob.IsSet && recoveryBlob.Value == null)
                 throw new ArgumentNullException(nameof(recoveryBlob), "Property is not nullable for class CreateEncryptionRecoveryRequest.");
 
-            return new CreateEncryptionRecoveryRequest(mailboxEmail.Value!, recoveryBlob.Value!);
+            if (mailboxEmail.IsSet && mailboxEmail.Value == null)
+                throw new ArgumentNullException(nameof(mailboxEmail), "Property is not nullable for class CreateEncryptionRecoveryRequest.");
+
+            return new CreateEncryptionRecoveryRequest(recoveryBlob.Value!, mailboxEmail);
         }
 
         /// <summary>
@@ -174,15 +178,16 @@ namespace Lockally.SDK.Model
         /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, CreateEncryptionRecoveryRequest createEncryptionRecoveryRequest, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (createEncryptionRecoveryRequest.MailboxEmail == null)
-                throw new ArgumentNullException(nameof(createEncryptionRecoveryRequest.MailboxEmail), "Property is required for class CreateEncryptionRecoveryRequest.");
-
             if (createEncryptionRecoveryRequest.RecoveryBlob == null)
                 throw new ArgumentNullException(nameof(createEncryptionRecoveryRequest.RecoveryBlob), "Property is required for class CreateEncryptionRecoveryRequest.");
 
-            writer.WriteString("mailbox_email", createEncryptionRecoveryRequest.MailboxEmail);
+            if (createEncryptionRecoveryRequest.MailboxEmailOption.IsSet && createEncryptionRecoveryRequest.MailboxEmail == null)
+                throw new ArgumentNullException(nameof(createEncryptionRecoveryRequest.MailboxEmail), "Property is required for class CreateEncryptionRecoveryRequest.");
 
             writer.WriteString("recovery_blob", createEncryptionRecoveryRequest.RecoveryBlob);
+
+            if (createEncryptionRecoveryRequest.MailboxEmailOption.IsSet)
+                writer.WriteString("mailbox_email", createEncryptionRecoveryRequest.MailboxEmail);
         }
     }
 }

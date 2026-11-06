@@ -179,5 +179,23 @@ namespace Lockally.SDK.Test.Model
         {
             // TODO unit test for the property 'Role'
         }
+
+        /// <summary>
+        /// Test the property 'ExternalSystem'
+        /// </summary>
+        [Fact]
+        public void ExternalSystemTest()
+        {
+            // TODO unit test for the property 'ExternalSystem'
+        }
+
+        /// <summary>
+        /// Test the property 'ExternalId'
+        /// </summary>
+        [Fact]
+        public void ExternalIdTest()
+        {
+            // TODO unit test for the property 'ExternalId'
+        }
     }
 }

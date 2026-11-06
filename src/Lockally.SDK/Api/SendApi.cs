@@ -94,9 +94,10 @@ namespace Lockally.SDK.Api
         /// <param name="from">Window start (default 7 days ago). (optional)</param>
         /// <param name="to">Window end (default now). (optional)</param>
         /// <param name="domain">Filter by sender domain. (optional)</param>
+        /// <param name="tag">Group the window by the sender&#39;s own tags: one tag, or a comma-separated set meaning ANY. Case-insensitive. This is the dimension that tells a transactional stream from a notification one. (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetMessageStatsApiResponse"/>&gt;</returns>
-        Task<IGetMessageStatsApiResponse> GetMessageStatsAsync(Option<DateTime> from = default, Option<DateTime> to = default, Option<string> domain = default, System.Threading.CancellationToken cancellationToken = default);
+        Task<IGetMessageStatsApiResponse> GetMessageStatsAsync(Option<DateTime> from = default, Option<DateTime> to = default, Option<string> domain = default, Option<string> tag = default, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Aggregate delivery stats
@@ -107,9 +108,10 @@ namespace Lockally.SDK.Api
         /// <param name="from">Window start (default 7 days ago). (optional)</param>
         /// <param name="to">Window end (default now). (optional)</param>
         /// <param name="domain">Filter by sender domain. (optional)</param>
+        /// <param name="tag">Group the window by the sender&#39;s own tags: one tag, or a comma-separated set meaning ANY. Case-insensitive. This is the dimension that tells a transactional stream from a notification one. (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetMessageStatsApiResponse"/>?&gt;</returns>
-        Task<IGetMessageStatsApiResponse?> GetMessageStatsOrDefaultAsync(Option<DateTime> from = default, Option<DateTime> to = default, Option<string> domain = default, System.Threading.CancellationToken cancellationToken = default);
+        Task<IGetMessageStatsApiResponse?> GetMessageStatsOrDefaultAsync(Option<DateTime> from = default, Option<DateTime> to = default, Option<string> domain = default, Option<string> tag = default, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// List outbound messages
@@ -120,13 +122,16 @@ namespace Lockally.SDK.Api
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="status"> (optional)</param>
         /// <param name="sender">Exact match against the &#x60;from&#x60; mailbox. (optional)</param>
+        /// <param name="tag">Filter to messages carrying any of these tags. One tag, or a comma-separated set meaning ANY. Case-insensitive: the value is normalised the same way tags are on write. (optional)</param>
         /// <param name="q">Free-text search across subject + sender. (optional)</param>
         /// <param name="since">Only messages queued at or after this RFC 3339 instant. (optional)</param>
         /// <param name="cursor">queued_at of the prior page boundary. Pass back the &#x60;next_cursor&#x60; returned by the previous call. (optional)</param>
         /// <param name="limit"> (optional, default to 50)</param>
+        /// <param name="sort">Field to order by. Only indexed columns are offered: an unindexed sort on this table is a full scan of the account&#39;s send history. status and sender are filters instead. (optional, default to queued_at)</param>
+        /// <param name="order">Defaults to desc for the default field and asc for any other. The order is always made total by a tie-break on id, so paging cannot repeat or skip a row that shares a timestamp. cursor encodes queued_at, so combining it with another sort is a 400 rather than a wrong page. (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListMessagesApiResponse"/>&gt;</returns>
-        Task<IListMessagesApiResponse> ListMessagesAsync(Option<string> status = default, Option<string> sender = default, Option<string> q = default, Option<DateTime> since = default, Option<string> cursor = default, Option<int> limit = default, System.Threading.CancellationToken cancellationToken = default);
+        Task<IListMessagesApiResponse> ListMessagesAsync(Option<string> status = default, Option<string> sender = default, Option<string> tag = default, Option<string> q = default, Option<DateTime> since = default, Option<string> cursor = default, Option<int> limit = default, Option<string> sort = default, Option<string> order = default, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// List outbound messages
@@ -136,13 +141,16 @@ namespace Lockally.SDK.Api
         /// </remarks>
         /// <param name="status"> (optional)</param>
         /// <param name="sender">Exact match against the &#x60;from&#x60; mailbox. (optional)</param>
+        /// <param name="tag">Filter to messages carrying any of these tags. One tag, or a comma-separated set meaning ANY. Case-insensitive: the value is normalised the same way tags are on write. (optional)</param>
         /// <param name="q">Free-text search across subject + sender. (optional)</param>
         /// <param name="since">Only messages queued at or after this RFC 3339 instant. (optional)</param>
         /// <param name="cursor">queued_at of the prior page boundary. Pass back the &#x60;next_cursor&#x60; returned by the previous call. (optional)</param>
         /// <param name="limit"> (optional, default to 50)</param>
+        /// <param name="sort">Field to order by. Only indexed columns are offered: an unindexed sort on this table is a full scan of the account&#39;s send history. status and sender are filters instead. (optional, default to queued_at)</param>
+        /// <param name="order">Defaults to desc for the default field and asc for any other. The order is always made total by a tie-break on id, so paging cannot repeat or skip a row that shares a timestamp. cursor encodes queued_at, so combining it with another sort is a 400 rather than a wrong page. (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListMessagesApiResponse"/>?&gt;</returns>
-        Task<IListMessagesApiResponse?> ListMessagesOrDefaultAsync(Option<string> status = default, Option<string> sender = default, Option<string> q = default, Option<DateTime> since = default, Option<string> cursor = default, Option<int> limit = default, System.Threading.CancellationToken cancellationToken = default);
+        Task<IListMessagesApiResponse?> ListMessagesOrDefaultAsync(Option<string> status = default, Option<string> sender = default, Option<string> tag = default, Option<string> q = default, Option<DateTime> since = default, Option<string> cursor = default, Option<int> limit = default, Option<string> sort = default, Option<string> order = default, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Send an email
@@ -1188,17 +1196,21 @@ namespace Lockally.SDK.Api
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
         }
 
-        partial void FormatGetMessageStats(ref Option<DateTime> from, ref Option<DateTime> to, ref Option<string> domain);
+        partial void FormatGetMessageStats(ref Option<DateTime> from, ref Option<DateTime> to, ref Option<string> domain, ref Option<string> tag);
 
         /// <summary>
         /// Validates the request parameters
         /// </summary>
         /// <param name="domain"></param>
+        /// <param name="tag"></param>
         /// <returns></returns>
-        private void ValidateGetMessageStats(Option<string> domain)
+        private void ValidateGetMessageStats(Option<string> domain, Option<string> tag)
         {
             if (domain.IsSet && domain.Value == null)
                 throw new ArgumentNullException(nameof(domain));
+
+            if (tag.IsSet && tag.Value == null)
+                throw new ArgumentNullException(nameof(tag));
         }
 
         /// <summary>
@@ -1208,10 +1220,11 @@ namespace Lockally.SDK.Api
         /// <param name="from"></param>
         /// <param name="to"></param>
         /// <param name="domain"></param>
-        private void AfterGetMessageStatsDefaultImplementation(IGetMessageStatsApiResponse apiResponseLocalVar, Option<DateTime> from, Option<DateTime> to, Option<string> domain)
+        /// <param name="tag"></param>
+        private void AfterGetMessageStatsDefaultImplementation(IGetMessageStatsApiResponse apiResponseLocalVar, Option<DateTime> from, Option<DateTime> to, Option<string> domain, Option<string> tag)
         {
             bool suppressDefaultLog = false;
-            AfterGetMessageStats(ref suppressDefaultLog, apiResponseLocalVar, from, to, domain);
+            AfterGetMessageStats(ref suppressDefaultLog, apiResponseLocalVar, from, to, domain, tag);
             if (!suppressDefaultLog)
                 Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
         }
@@ -1224,7 +1237,8 @@ namespace Lockally.SDK.Api
         /// <param name="from"></param>
         /// <param name="to"></param>
         /// <param name="domain"></param>
-        partial void AfterGetMessageStats(ref bool suppressDefaultLog, IGetMessageStatsApiResponse apiResponseLocalVar, Option<DateTime> from, Option<DateTime> to, Option<string> domain);
+        /// <param name="tag"></param>
+        partial void AfterGetMessageStats(ref bool suppressDefaultLog, IGetMessageStatsApiResponse apiResponseLocalVar, Option<DateTime> from, Option<DateTime> to, Option<string> domain, Option<string> tag);
 
         /// <summary>
         /// Logs exceptions that occur while retrieving the server response
@@ -1235,10 +1249,11 @@ namespace Lockally.SDK.Api
         /// <param name="from"></param>
         /// <param name="to"></param>
         /// <param name="domain"></param>
-        private void OnErrorGetMessageStatsDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, Option<DateTime> from, Option<DateTime> to, Option<string> domain)
+        /// <param name="tag"></param>
+        private void OnErrorGetMessageStatsDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, Option<DateTime> from, Option<DateTime> to, Option<string> domain, Option<string> tag)
         {
             bool suppressDefaultLogLocalVar = false;
-            OnErrorGetMessageStats(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, from, to, domain);
+            OnErrorGetMessageStats(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, from, to, domain, tag);
             if (!suppressDefaultLogLocalVar)
                 Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
         }
@@ -1253,7 +1268,8 @@ namespace Lockally.SDK.Api
         /// <param name="from"></param>
         /// <param name="to"></param>
         /// <param name="domain"></param>
-        partial void OnErrorGetMessageStats(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, Option<DateTime> from, Option<DateTime> to, Option<string> domain);
+        /// <param name="tag"></param>
+        partial void OnErrorGetMessageStats(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, Option<DateTime> from, Option<DateTime> to, Option<string> domain, Option<string> tag);
 
         /// <summary>
         /// Aggregate delivery stats Counts by delivery outcome (delivered/bounced/deferred/complaint) plus rates over a window, from the delivery-event store. Privacy-first: this reflects what receiving servers reported, NOT whether a human opened the mail, Lockally does no open/click tracking. 
@@ -1261,13 +1277,14 @@ namespace Lockally.SDK.Api
         /// <param name="from">Window start (default 7 days ago). (optional)</param>
         /// <param name="to">Window end (default now). (optional)</param>
         /// <param name="domain">Filter by sender domain. (optional)</param>
+        /// <param name="tag">Group the window by the sender&#39;s own tags: one tag, or a comma-separated set meaning ANY. Case-insensitive. This is the dimension that tells a transactional stream from a notification one. (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetMessageStatsApiResponse"/>&gt;</returns>
-        public async Task<IGetMessageStatsApiResponse?> GetMessageStatsOrDefaultAsync(Option<DateTime> from = default, Option<DateTime> to = default, Option<string> domain = default, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IGetMessageStatsApiResponse?> GetMessageStatsOrDefaultAsync(Option<DateTime> from = default, Option<DateTime> to = default, Option<string> domain = default, Option<string> tag = default, System.Threading.CancellationToken cancellationToken = default)
         {
             try
             {
-                return await GetMessageStatsAsync(from, to, domain, cancellationToken).ConfigureAwait(false);
+                return await GetMessageStatsAsync(from, to, domain, tag, cancellationToken).ConfigureAwait(false);
             }
             catch (Exception)
             {
@@ -1282,17 +1299,18 @@ namespace Lockally.SDK.Api
         /// <param name="from">Window start (default 7 days ago). (optional)</param>
         /// <param name="to">Window end (default now). (optional)</param>
         /// <param name="domain">Filter by sender domain. (optional)</param>
+        /// <param name="tag">Group the window by the sender&#39;s own tags: one tag, or a comma-separated set meaning ANY. Case-insensitive. This is the dimension that tells a transactional stream from a notification one. (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetMessageStatsApiResponse"/>&gt;</returns>
-        public async Task<IGetMessageStatsApiResponse> GetMessageStatsAsync(Option<DateTime> from = default, Option<DateTime> to = default, Option<string> domain = default, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IGetMessageStatsApiResponse> GetMessageStatsAsync(Option<DateTime> from = default, Option<DateTime> to = default, Option<string> domain = default, Option<string> tag = default, System.Threading.CancellationToken cancellationToken = default)
         {
             UriBuilder uriBuilderLocalVar = new UriBuilder();
 
             try
             {
-                ValidateGetMessageStats(domain);
+                ValidateGetMessageStats(domain, tag);
 
-                FormatGetMessageStats(ref from, ref to, ref domain);
+                FormatGetMessageStats(ref from, ref to, ref domain, ref tag);
 
                 using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
                 {
@@ -1313,6 +1331,9 @@ namespace Lockally.SDK.Api
 
                     if (domain.IsSet)
                         parseQueryStringLocalVar["domain"] = ClientUtils.ParameterToString(domain.Value);
+
+                    if (tag.IsSet)
+                        parseQueryStringLocalVar["tag"] = ClientUtils.ParameterToString(tag.Value);
 
                     uriBuilderLocalVar.Query = parseQueryStringLocalVar.ToString();
 
@@ -1353,7 +1374,7 @@ namespace Lockally.SDK.Api
                             }
                         }
 
-                        AfterGetMessageStatsDefaultImplementation(apiResponseLocalVar, from, to, domain);
+                        AfterGetMessageStatsDefaultImplementation(apiResponseLocalVar, from, to, domain, tag);
 
                         Events.ExecuteOnGetMessageStats(apiResponseLocalVar);
 
@@ -1367,7 +1388,7 @@ namespace Lockally.SDK.Api
             }
             catch(Exception e)
             {
-                OnErrorGetMessageStatsDefaultImplementation(e, "/v1/messages/stats", uriBuilderLocalVar.Path, from, to, domain);
+                OnErrorGetMessageStatsDefaultImplementation(e, "/v1/messages/stats", uriBuilderLocalVar.Path, from, to, domain, tag);
                 Events.ExecuteOnErrorGetMessageStats(e);
                 throw;
             }
@@ -1542,17 +1563,20 @@ namespace Lockally.SDK.Api
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
         }
 
-        partial void FormatListMessages(ref Option<string> status, ref Option<string> sender, ref Option<string> q, ref Option<DateTime> since, ref Option<string> cursor, ref Option<int> limit);
+        partial void FormatListMessages(ref Option<string> status, ref Option<string> sender, ref Option<string> tag, ref Option<string> q, ref Option<DateTime> since, ref Option<string> cursor, ref Option<int> limit, ref Option<string> sort, ref Option<string> order);
 
         /// <summary>
         /// Validates the request parameters
         /// </summary>
         /// <param name="status"></param>
         /// <param name="sender"></param>
+        /// <param name="tag"></param>
         /// <param name="q"></param>
         /// <param name="cursor"></param>
+        /// <param name="sort"></param>
+        /// <param name="order"></param>
         /// <returns></returns>
-        private void ValidateListMessages(Option<string> status, Option<string> sender, Option<string> q, Option<string> cursor)
+        private void ValidateListMessages(Option<string> status, Option<string> sender, Option<string> tag, Option<string> q, Option<string> cursor, Option<string> sort, Option<string> order)
         {
             if (status.IsSet && status.Value == null)
                 throw new ArgumentNullException(nameof(status));
@@ -1560,11 +1584,20 @@ namespace Lockally.SDK.Api
             if (sender.IsSet && sender.Value == null)
                 throw new ArgumentNullException(nameof(sender));
 
+            if (tag.IsSet && tag.Value == null)
+                throw new ArgumentNullException(nameof(tag));
+
             if (q.IsSet && q.Value == null)
                 throw new ArgumentNullException(nameof(q));
 
             if (cursor.IsSet && cursor.Value == null)
                 throw new ArgumentNullException(nameof(cursor));
+
+            if (sort.IsSet && sort.Value == null)
+                throw new ArgumentNullException(nameof(sort));
+
+            if (order.IsSet && order.Value == null)
+                throw new ArgumentNullException(nameof(order));
         }
 
         /// <summary>
@@ -1573,14 +1606,17 @@ namespace Lockally.SDK.Api
         /// <param name="apiResponseLocalVar"></param>
         /// <param name="status"></param>
         /// <param name="sender"></param>
+        /// <param name="tag"></param>
         /// <param name="q"></param>
         /// <param name="since"></param>
         /// <param name="cursor"></param>
         /// <param name="limit"></param>
-        private void AfterListMessagesDefaultImplementation(IListMessagesApiResponse apiResponseLocalVar, Option<string> status, Option<string> sender, Option<string> q, Option<DateTime> since, Option<string> cursor, Option<int> limit)
+        /// <param name="sort"></param>
+        /// <param name="order"></param>
+        private void AfterListMessagesDefaultImplementation(IListMessagesApiResponse apiResponseLocalVar, Option<string> status, Option<string> sender, Option<string> tag, Option<string> q, Option<DateTime> since, Option<string> cursor, Option<int> limit, Option<string> sort, Option<string> order)
         {
             bool suppressDefaultLog = false;
-            AfterListMessages(ref suppressDefaultLog, apiResponseLocalVar, status, sender, q, since, cursor, limit);
+            AfterListMessages(ref suppressDefaultLog, apiResponseLocalVar, status, sender, tag, q, since, cursor, limit, sort, order);
             if (!suppressDefaultLog)
                 Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
         }
@@ -1592,11 +1628,14 @@ namespace Lockally.SDK.Api
         /// <param name="apiResponseLocalVar"></param>
         /// <param name="status"></param>
         /// <param name="sender"></param>
+        /// <param name="tag"></param>
         /// <param name="q"></param>
         /// <param name="since"></param>
         /// <param name="cursor"></param>
         /// <param name="limit"></param>
-        partial void AfterListMessages(ref bool suppressDefaultLog, IListMessagesApiResponse apiResponseLocalVar, Option<string> status, Option<string> sender, Option<string> q, Option<DateTime> since, Option<string> cursor, Option<int> limit);
+        /// <param name="sort"></param>
+        /// <param name="order"></param>
+        partial void AfterListMessages(ref bool suppressDefaultLog, IListMessagesApiResponse apiResponseLocalVar, Option<string> status, Option<string> sender, Option<string> tag, Option<string> q, Option<DateTime> since, Option<string> cursor, Option<int> limit, Option<string> sort, Option<string> order);
 
         /// <summary>
         /// Logs exceptions that occur while retrieving the server response
@@ -1606,14 +1645,17 @@ namespace Lockally.SDK.Api
         /// <param name="pathLocalVar"></param>
         /// <param name="status"></param>
         /// <param name="sender"></param>
+        /// <param name="tag"></param>
         /// <param name="q"></param>
         /// <param name="since"></param>
         /// <param name="cursor"></param>
         /// <param name="limit"></param>
-        private void OnErrorListMessagesDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, Option<string> status, Option<string> sender, Option<string> q, Option<DateTime> since, Option<string> cursor, Option<int> limit)
+        /// <param name="sort"></param>
+        /// <param name="order"></param>
+        private void OnErrorListMessagesDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, Option<string> status, Option<string> sender, Option<string> tag, Option<string> q, Option<DateTime> since, Option<string> cursor, Option<int> limit, Option<string> sort, Option<string> order)
         {
             bool suppressDefaultLogLocalVar = false;
-            OnErrorListMessages(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, status, sender, q, since, cursor, limit);
+            OnErrorListMessages(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, status, sender, tag, q, since, cursor, limit, sort, order);
             if (!suppressDefaultLogLocalVar)
                 Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
         }
@@ -1627,28 +1669,34 @@ namespace Lockally.SDK.Api
         /// <param name="pathLocalVar"></param>
         /// <param name="status"></param>
         /// <param name="sender"></param>
+        /// <param name="tag"></param>
         /// <param name="q"></param>
         /// <param name="since"></param>
         /// <param name="cursor"></param>
         /// <param name="limit"></param>
-        partial void OnErrorListMessages(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, Option<string> status, Option<string> sender, Option<string> q, Option<DateTime> since, Option<string> cursor, Option<int> limit);
+        /// <param name="sort"></param>
+        /// <param name="order"></param>
+        partial void OnErrorListMessages(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, Option<string> status, Option<string> sender, Option<string> tag, Option<string> q, Option<DateTime> since, Option<string> cursor, Option<int> limit, Option<string> sort, Option<string> order);
 
         /// <summary>
         /// List outbound messages Returns recent outbound messages for the calling tenant, sorted newest first. 
         /// </summary>
         /// <param name="status"> (optional)</param>
         /// <param name="sender">Exact match against the &#x60;from&#x60; mailbox. (optional)</param>
+        /// <param name="tag">Filter to messages carrying any of these tags. One tag, or a comma-separated set meaning ANY. Case-insensitive: the value is normalised the same way tags are on write. (optional)</param>
         /// <param name="q">Free-text search across subject + sender. (optional)</param>
         /// <param name="since">Only messages queued at or after this RFC 3339 instant. (optional)</param>
         /// <param name="cursor">queued_at of the prior page boundary. Pass back the &#x60;next_cursor&#x60; returned by the previous call. (optional)</param>
         /// <param name="limit"> (optional, default to 50)</param>
+        /// <param name="sort">Field to order by. Only indexed columns are offered: an unindexed sort on this table is a full scan of the account&#39;s send history. status and sender are filters instead. (optional, default to queued_at)</param>
+        /// <param name="order">Defaults to desc for the default field and asc for any other. The order is always made total by a tie-break on id, so paging cannot repeat or skip a row that shares a timestamp. cursor encodes queued_at, so combining it with another sort is a 400 rather than a wrong page. (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListMessagesApiResponse"/>&gt;</returns>
-        public async Task<IListMessagesApiResponse?> ListMessagesOrDefaultAsync(Option<string> status = default, Option<string> sender = default, Option<string> q = default, Option<DateTime> since = default, Option<string> cursor = default, Option<int> limit = default, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IListMessagesApiResponse?> ListMessagesOrDefaultAsync(Option<string> status = default, Option<string> sender = default, Option<string> tag = default, Option<string> q = default, Option<DateTime> since = default, Option<string> cursor = default, Option<int> limit = default, Option<string> sort = default, Option<string> order = default, System.Threading.CancellationToken cancellationToken = default)
         {
             try
             {
-                return await ListMessagesAsync(status, sender, q, since, cursor, limit, cancellationToken).ConfigureAwait(false);
+                return await ListMessagesAsync(status, sender, tag, q, since, cursor, limit, sort, order, cancellationToken).ConfigureAwait(false);
             }
             catch (Exception)
             {
@@ -1662,21 +1710,24 @@ namespace Lockally.SDK.Api
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="status"> (optional)</param>
         /// <param name="sender">Exact match against the &#x60;from&#x60; mailbox. (optional)</param>
+        /// <param name="tag">Filter to messages carrying any of these tags. One tag, or a comma-separated set meaning ANY. Case-insensitive: the value is normalised the same way tags are on write. (optional)</param>
         /// <param name="q">Free-text search across subject + sender. (optional)</param>
         /// <param name="since">Only messages queued at or after this RFC 3339 instant. (optional)</param>
         /// <param name="cursor">queued_at of the prior page boundary. Pass back the &#x60;next_cursor&#x60; returned by the previous call. (optional)</param>
         /// <param name="limit"> (optional, default to 50)</param>
+        /// <param name="sort">Field to order by. Only indexed columns are offered: an unindexed sort on this table is a full scan of the account&#39;s send history. status and sender are filters instead. (optional, default to queued_at)</param>
+        /// <param name="order">Defaults to desc for the default field and asc for any other. The order is always made total by a tie-break on id, so paging cannot repeat or skip a row that shares a timestamp. cursor encodes queued_at, so combining it with another sort is a 400 rather than a wrong page. (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListMessagesApiResponse"/>&gt;</returns>
-        public async Task<IListMessagesApiResponse> ListMessagesAsync(Option<string> status = default, Option<string> sender = default, Option<string> q = default, Option<DateTime> since = default, Option<string> cursor = default, Option<int> limit = default, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IListMessagesApiResponse> ListMessagesAsync(Option<string> status = default, Option<string> sender = default, Option<string> tag = default, Option<string> q = default, Option<DateTime> since = default, Option<string> cursor = default, Option<int> limit = default, Option<string> sort = default, Option<string> order = default, System.Threading.CancellationToken cancellationToken = default)
         {
             UriBuilder uriBuilderLocalVar = new UriBuilder();
 
             try
             {
-                ValidateListMessages(status, sender, q, cursor);
+                ValidateListMessages(status, sender, tag, q, cursor, sort, order);
 
-                FormatListMessages(ref status, ref sender, ref q, ref since, ref cursor, ref limit);
+                FormatListMessages(ref status, ref sender, ref tag, ref q, ref since, ref cursor, ref limit, ref sort, ref order);
 
                 using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
                 {
@@ -1695,6 +1746,9 @@ namespace Lockally.SDK.Api
                     if (sender.IsSet)
                         parseQueryStringLocalVar["sender"] = ClientUtils.ParameterToString(sender.Value);
 
+                    if (tag.IsSet)
+                        parseQueryStringLocalVar["tag"] = ClientUtils.ParameterToString(tag.Value);
+
                     if (q.IsSet)
                         parseQueryStringLocalVar["q"] = ClientUtils.ParameterToString(q.Value);
 
@@ -1706,6 +1760,12 @@ namespace Lockally.SDK.Api
 
                     if (limit.IsSet)
                         parseQueryStringLocalVar["limit"] = ClientUtils.ParameterToString(limit.Value);
+
+                    if (sort.IsSet)
+                        parseQueryStringLocalVar["sort"] = ClientUtils.ParameterToString(sort.Value);
+
+                    if (order.IsSet)
+                        parseQueryStringLocalVar["order"] = ClientUtils.ParameterToString(order.Value);
 
                     uriBuilderLocalVar.Query = parseQueryStringLocalVar.ToString();
 
@@ -1746,7 +1806,7 @@ namespace Lockally.SDK.Api
                             }
                         }
 
-                        AfterListMessagesDefaultImplementation(apiResponseLocalVar, status, sender, q, since, cursor, limit);
+                        AfterListMessagesDefaultImplementation(apiResponseLocalVar, status, sender, tag, q, since, cursor, limit, sort, order);
 
                         Events.ExecuteOnListMessages(apiResponseLocalVar);
 
@@ -1760,7 +1820,7 @@ namespace Lockally.SDK.Api
             }
             catch(Exception e)
             {
-                OnErrorListMessagesDefaultImplementation(e, "/v1/messages", uriBuilderLocalVar.Path, status, sender, q, since, cursor, limit);
+                OnErrorListMessagesDefaultImplementation(e, "/v1/messages", uriBuilderLocalVar.Path, status, sender, tag, q, since, cursor, limit, sort, order);
                 Events.ExecuteOnErrorListMessages(e);
                 throw;
             }

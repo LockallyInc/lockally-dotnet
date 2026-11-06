@@ -72,7 +72,7 @@ namespace Lockally.SDK.Test.Api
             Guid id = default!;
             var response = await _instance.CheckMigrationDNSAsync(id);
             var model = response.Ok();
-            Assert.IsType<Object>(model);
+            Assert.IsType<MigrationDNSCheck>(model);
         }
 
         /// <summary>

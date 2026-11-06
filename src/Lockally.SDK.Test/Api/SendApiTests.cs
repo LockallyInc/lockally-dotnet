@@ -82,7 +82,8 @@ namespace Lockally.SDK.Test.Api
             Client.Option<DateTime> from = default!;
             Client.Option<DateTime> to = default!;
             Client.Option<string> domain = default!;
-            var response = await _instance.GetMessageStatsAsync(from, to, domain);
+            Client.Option<string> tag = default!;
+            var response = await _instance.GetMessageStatsAsync(from, to, domain, tag);
             var model = response.Ok();
             Assert.IsType<MessageStats>(model);
         }
@@ -95,11 +96,14 @@ namespace Lockally.SDK.Test.Api
         {
             Client.Option<string> status = default!;
             Client.Option<string> sender = default!;
+            Client.Option<string> tag = default!;
             Client.Option<string> q = default!;
             Client.Option<DateTime> since = default!;
             Client.Option<string> cursor = default!;
             Client.Option<int> limit = default!;
-            var response = await _instance.ListMessagesAsync(status, sender, q, since, cursor, limit);
+            Client.Option<string> sort = default!;
+            Client.Option<string> order = default!;
+            var response = await _instance.ListMessagesAsync(status, sender, tag, q, since, cursor, limit, sort, order);
             var model = response.Ok();
             Assert.IsType<ListMessages200Response>(model);
         }

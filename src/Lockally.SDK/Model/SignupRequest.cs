@@ -34,7 +34,7 @@ namespace Lockally.SDK.Model
         /// <summary>
         /// Initializes a new instance of the <see cref="SignupRequest" /> class.
         /// </summary>
-        /// <param name="slug">slug</param>
+        /// <param name="slug">Workspace id. 3 to 63 characters of lowercase a-z, 0-9 and hyphens, starting and ending with a letter or digit. Anything else is refused with 400 Invalid workspace id.</param>
         /// <param name="adminEmail">adminEmail</param>
         /// <param name="password">password</param>
         /// <param name="displayName">displayName</param>
@@ -146,8 +146,9 @@ namespace Lockally.SDK.Model
         public ModeEnum? Mode { get { return this.ModeOption.Value; } set { this.ModeOption = new(value); } }
 
         /// <summary>
-        /// Gets or Sets Slug
+        /// Workspace id. 3 to 63 characters of lowercase a-z, 0-9 and hyphens, starting and ending with a letter or digit. Anything else is refused with 400 Invalid workspace id.
         /// </summary>
+        /// <value>Workspace id. 3 to 63 characters of lowercase a-z, 0-9 and hyphens, starting and ending with a letter or digit. Anything else is refused with 400 Invalid workspace id.</value>
         [JsonPropertyName("slug")]
         public string Slug { get; set; }
 

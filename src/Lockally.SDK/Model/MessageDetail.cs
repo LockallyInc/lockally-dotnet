@@ -45,6 +45,8 @@ namespace Lockally.SDK.Model
         /// <param name="subject">subject</param>
         /// <param name="bounceReason">bounceReason</param>
         /// <param name="sizeBytes">sizeBytes</param>
+        /// <param name="metadata">The sender&#39;s own key/value from the send request. Always present; &#x60;{}&#x60; when none was set.</param>
+        /// <param name="tags">Grouping labels, lowercased and deduplicated. Always present; &#x60;[]&#x60; when none were set.</param>
         /// <param name="from">from</param>
         /// <param name="to">to</param>
         /// <param name="cc">cc</param>
@@ -53,7 +55,7 @@ namespace Lockally.SDK.Model
         /// <param name="html">html</param>
         /// <param name="headers">headers</param>
         [JsonConstructor]
-        public MessageDetail(Guid id, Guid tenantId, string messageId, string sender, List<string> recipients, StatusEnum status, DateTime queuedAt, DateTime updatedAt, Option<string?> subject = default, Option<string?> bounceReason = default, Option<int?> sizeBytes = default, Option<string?> from = default, Option<List<string>?> to = default, Option<List<string>?> cc = default, Option<List<string>?> bcc = default, Option<string?> text = default, Option<string?> html = default, Option<Dictionary<string, string>?> headers = default)
+        public MessageDetail(Guid id, Guid tenantId, string messageId, string sender, List<string> recipients, StatusEnum status, DateTime queuedAt, DateTime updatedAt, Option<string?> subject = default, Option<string?> bounceReason = default, Option<int?> sizeBytes = default, Option<Dictionary<string, string>?> metadata = default, Option<List<string>?> tags = default, Option<string?> from = default, Option<List<string>?> to = default, Option<List<string>?> cc = default, Option<List<string>?> bcc = default, Option<string?> text = default, Option<string?> html = default, Option<Dictionary<string, string>?> headers = default)
         {
             Id = id;
             TenantId = tenantId;
@@ -66,6 +68,8 @@ namespace Lockally.SDK.Model
             SubjectOption = subject;
             BounceReasonOption = bounceReason;
             SizeBytesOption = sizeBytes;
+            MetadataOption = metadata;
+            TagsOption = tags;
             FromOption = from;
             ToOption = to;
             CcOption = cc;
@@ -289,6 +293,34 @@ namespace Lockally.SDK.Model
         public int? SizeBytes { get { return this.SizeBytesOption.Value; } set { this.SizeBytesOption = new(value); } }
 
         /// <summary>
+        /// Used to track the state of Metadata
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<Dictionary<string, string>?> MetadataOption { get; private set; }
+
+        /// <summary>
+        /// The sender&#39;s own key/value from the send request. Always present; &#x60;{}&#x60; when none was set.
+        /// </summary>
+        /// <value>The sender&#39;s own key/value from the send request. Always present; &#x60;{}&#x60; when none was set.</value>
+        [JsonPropertyName("metadata")]
+        public Dictionary<string, string>? Metadata { get { return this.MetadataOption.Value; } set { this.MetadataOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of Tags
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<List<string>?> TagsOption { get; private set; }
+
+        /// <summary>
+        /// Grouping labels, lowercased and deduplicated. Always present; &#x60;[]&#x60; when none were set.
+        /// </summary>
+        /// <value>Grouping labels, lowercased and deduplicated. Always present; &#x60;[]&#x60; when none were set.</value>
+        [JsonPropertyName("tags")]
+        public List<string>? Tags { get { return this.TagsOption.Value; } set { this.TagsOption = new(value); } }
+
+        /// <summary>
         /// Used to track the state of From
         /// </summary>
         [JsonIgnore]
@@ -398,6 +430,8 @@ namespace Lockally.SDK.Model
             sb.Append("  Subject: ").Append(Subject).Append("\n");
             sb.Append("  BounceReason: ").Append(BounceReason).Append("\n");
             sb.Append("  SizeBytes: ").Append(SizeBytes).Append("\n");
+            sb.Append("  Metadata: ").Append(Metadata).Append("\n");
+            sb.Append("  Tags: ").Append(Tags).Append("\n");
             sb.Append("  From: ").Append(From).Append("\n");
             sb.Append("  To: ").Append(To).Append("\n");
             sb.Append("  Cc: ").Append(Cc).Append("\n");
@@ -463,6 +497,8 @@ namespace Lockally.SDK.Model
             Option<string?> subject = default;
             Option<string?> bounceReason = default;
             Option<int?> sizeBytes = default;
+            Option<Dictionary<string, string>?> metadata = default;
+            Option<List<string>?> tags = default;
             Option<string?> from = default;
             Option<List<string>?> to = default;
             Option<List<string>?> cc = default;
@@ -520,6 +556,12 @@ namespace Lockally.SDK.Model
                             break;
                         case "size_bytes":
                             sizeBytes = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
+                            break;
+                        case "metadata":
+                            metadata = new Option<Dictionary<string, string>?>(JsonSerializer.Deserialize<Dictionary<string, string>>(ref utf8JsonReader, jsonSerializerOptions)!);
+                            break;
+                        case "tags":
+                            tags = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions)!);
                             break;
                         case "from":
                             from = new Option<string?>(utf8JsonReader.GetString()!);
@@ -605,6 +647,12 @@ namespace Lockally.SDK.Model
             if (sizeBytes.IsSet && sizeBytes.Value == null)
                 throw new ArgumentNullException(nameof(sizeBytes), "Property is not nullable for class MessageDetail.");
 
+            if (metadata.IsSet && metadata.Value == null)
+                throw new ArgumentNullException(nameof(metadata), "Property is not nullable for class MessageDetail.");
+
+            if (tags.IsSet && tags.Value == null)
+                throw new ArgumentNullException(nameof(tags), "Property is not nullable for class MessageDetail.");
+
             if (from.IsSet && from.Value == null)
                 throw new ArgumentNullException(nameof(from), "Property is not nullable for class MessageDetail.");
 
@@ -626,7 +674,7 @@ namespace Lockally.SDK.Model
             if (headers.IsSet && headers.Value == null)
                 throw new ArgumentNullException(nameof(headers), "Property is not nullable for class MessageDetail.");
 
-            return new MessageDetail(id.Value!.Value!, tenantId.Value!.Value!, messageId.Value!, sender.Value!, recipients.Value!, status.Value!.Value!, queuedAt.Value!.Value!, updatedAt.Value!.Value!, subject, bounceReason, sizeBytes, from, to, cc, bcc, text, html, headers);
+            return new MessageDetail(id.Value!.Value!, tenantId.Value!.Value!, messageId.Value!, sender.Value!, recipients.Value!, status.Value!.Value!, queuedAt.Value!.Value!, updatedAt.Value!.Value!, subject, bounceReason, sizeBytes, metadata, tags, from, to, cc, bcc, text, html, headers);
         }
 
         /// <summary>
@@ -667,6 +715,12 @@ namespace Lockally.SDK.Model
 
             if (messageDetail.BounceReasonOption.IsSet && messageDetail.BounceReason == null)
                 throw new ArgumentNullException(nameof(messageDetail.BounceReason), "Property is required for class MessageDetail.");
+
+            if (messageDetail.MetadataOption.IsSet && messageDetail.Metadata == null)
+                throw new ArgumentNullException(nameof(messageDetail.Metadata), "Property is required for class MessageDetail.");
+
+            if (messageDetail.TagsOption.IsSet && messageDetail.Tags == null)
+                throw new ArgumentNullException(nameof(messageDetail.Tags), "Property is required for class MessageDetail.");
 
             if (messageDetail.FromOption.IsSet && messageDetail.From == null)
                 throw new ArgumentNullException(nameof(messageDetail.From), "Property is required for class MessageDetail.");
@@ -714,6 +768,16 @@ namespace Lockally.SDK.Model
             if (messageDetail.SizeBytesOption.IsSet)
                 writer.WriteNumber("size_bytes", messageDetail.SizeBytesOption.Value!.Value);
 
+            if (messageDetail.MetadataOption.IsSet)
+            {
+                writer.WritePropertyName("metadata");
+                JsonSerializer.Serialize(writer, messageDetail.Metadata, jsonSerializerOptions);
+            }
+            if (messageDetail.TagsOption.IsSet)
+            {
+                writer.WritePropertyName("tags");
+                JsonSerializer.Serialize(writer, messageDetail.Tags, jsonSerializerOptions);
+            }
             if (messageDetail.FromOption.IsSet)
                 writer.WriteString("from", messageDetail.From);
 

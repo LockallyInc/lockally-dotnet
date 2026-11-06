@@ -107,5 +107,50 @@ namespace Lockally.SDK.Test.Model
         {
             // TODO unit test for the property 'VarVersion'
         }
+
+        /// <summary>
+        /// Test the property 'CreatedAt'
+        /// </summary>
+        [Fact]
+        public void CreatedAtTest()
+        {
+            // TODO unit test for the property 'CreatedAt'
+        }
+
+        /// <summary>
+        /// Test the property 'RotatedAt'
+        /// </summary>
+        [Fact]
+        public void RotatedAtTest()
+        {
+            // TODO unit test for the property 'RotatedAt'
+        }
+
+        /// <summary>
+        /// Test the property 'HasRecovery'
+        /// </summary>
+        [Fact]
+        public void HasRecoveryTest()
+        {
+            // TODO unit test for the property 'HasRecovery'
+        }
+
+        /// <summary>
+        /// Test the property 'RecoverySetAt'
+        /// </summary>
+        [Fact]
+        public void RecoverySetAtTest()
+        {
+            // TODO unit test for the property 'RecoverySetAt'
+        }
+
+        /// <summary>
+        /// Test the property 'RecoveryBlob'
+        /// </summary>
+        [Fact]
+        public void RecoveryBlobTest()
+        {
+            // TODO unit test for the property 'RecoveryBlob'
+        }
     }
 }

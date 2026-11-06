@@ -183,9 +183,11 @@ namespace Lockally.SDK.Api
         /// Returns every domain registered under the calling tenant.
         /// </remarks>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="sort">Field to order by. This list holds tens of rows per account, so every column is offered and none needs an index. (optional, default to created_at)</param>
+        /// <param name="order">Defaults to desc for the default field and asc for any other. Always tie-broken on id, so the order is total. (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListDomainsApiResponse"/>&gt;</returns>
-        Task<IListDomainsApiResponse> ListDomainsAsync(System.Threading.CancellationToken cancellationToken = default);
+        Task<IListDomainsApiResponse> ListDomainsAsync(Option<string> sort = default, Option<string> order = default, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// List domains
@@ -193,9 +195,11 @@ namespace Lockally.SDK.Api
         /// <remarks>
         /// Returns every domain registered under the calling tenant.
         /// </remarks>
+        /// <param name="sort">Field to order by. This list holds tens of rows per account, so every column is offered and none needs an index. (optional, default to created_at)</param>
+        /// <param name="order">Defaults to desc for the default field and asc for any other. Always tie-broken on id, so the order is total. (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListDomainsApiResponse"/>?&gt;</returns>
-        Task<IListDomainsApiResponse?> ListDomainsOrDefaultAsync(System.Threading.CancellationToken cancellationToken = default);
+        Task<IListDomainsApiResponse?> ListDomainsOrDefaultAsync(Option<string> sort = default, Option<string> order = default, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Force-poll DNS verification
@@ -3102,14 +3106,33 @@ namespace Lockally.SDK.Api
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
         }
 
+        partial void FormatListDomains(ref Option<string> sort, ref Option<string> order);
+
+        /// <summary>
+        /// Validates the request parameters
+        /// </summary>
+        /// <param name="sort"></param>
+        /// <param name="order"></param>
+        /// <returns></returns>
+        private void ValidateListDomains(Option<string> sort, Option<string> order)
+        {
+            if (sort.IsSet && sort.Value == null)
+                throw new ArgumentNullException(nameof(sort));
+
+            if (order.IsSet && order.Value == null)
+                throw new ArgumentNullException(nameof(order));
+        }
+
         /// <summary>
         /// Processes the server response
         /// </summary>
         /// <param name="apiResponseLocalVar"></param>
-        private void AfterListDomainsDefaultImplementation(IListDomainsApiResponse apiResponseLocalVar)
+        /// <param name="sort"></param>
+        /// <param name="order"></param>
+        private void AfterListDomainsDefaultImplementation(IListDomainsApiResponse apiResponseLocalVar, Option<string> sort, Option<string> order)
         {
             bool suppressDefaultLog = false;
-            AfterListDomains(ref suppressDefaultLog, apiResponseLocalVar);
+            AfterListDomains(ref suppressDefaultLog, apiResponseLocalVar, sort, order);
             if (!suppressDefaultLog)
                 Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
         }
@@ -3119,7 +3142,9 @@ namespace Lockally.SDK.Api
         /// </summary>
         /// <param name="suppressDefaultLog"></param>
         /// <param name="apiResponseLocalVar"></param>
-        partial void AfterListDomains(ref bool suppressDefaultLog, IListDomainsApiResponse apiResponseLocalVar);
+        /// <param name="sort"></param>
+        /// <param name="order"></param>
+        partial void AfterListDomains(ref bool suppressDefaultLog, IListDomainsApiResponse apiResponseLocalVar, Option<string> sort, Option<string> order);
 
         /// <summary>
         /// Logs exceptions that occur while retrieving the server response
@@ -3127,10 +3152,12 @@ namespace Lockally.SDK.Api
         /// <param name="exceptionLocalVar"></param>
         /// <param name="pathFormatLocalVar"></param>
         /// <param name="pathLocalVar"></param>
-        private void OnErrorListDomainsDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar)
+        /// <param name="sort"></param>
+        /// <param name="order"></param>
+        private void OnErrorListDomainsDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, Option<string> sort, Option<string> order)
         {
             bool suppressDefaultLogLocalVar = false;
-            OnErrorListDomains(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar);
+            OnErrorListDomains(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, sort, order);
             if (!suppressDefaultLogLocalVar)
                 Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
         }
@@ -3142,18 +3169,22 @@ namespace Lockally.SDK.Api
         /// <param name="exceptionLocalVar"></param>
         /// <param name="pathFormatLocalVar"></param>
         /// <param name="pathLocalVar"></param>
-        partial void OnErrorListDomains(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar);
+        /// <param name="sort"></param>
+        /// <param name="order"></param>
+        partial void OnErrorListDomains(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, Option<string> sort, Option<string> order);
 
         /// <summary>
         /// List domains Returns every domain registered under the calling tenant.
         /// </summary>
+        /// <param name="sort">Field to order by. This list holds tens of rows per account, so every column is offered and none needs an index. (optional, default to created_at)</param>
+        /// <param name="order">Defaults to desc for the default field and asc for any other. Always tie-broken on id, so the order is total. (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListDomainsApiResponse"/>&gt;</returns>
-        public async Task<IListDomainsApiResponse?> ListDomainsOrDefaultAsync(System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IListDomainsApiResponse?> ListDomainsOrDefaultAsync(Option<string> sort = default, Option<string> order = default, System.Threading.CancellationToken cancellationToken = default)
         {
             try
             {
-                return await ListDomainsAsync(cancellationToken).ConfigureAwait(false);
+                return await ListDomainsAsync(sort, order, cancellationToken).ConfigureAwait(false);
             }
             catch (Exception)
             {
@@ -3165,14 +3196,20 @@ namespace Lockally.SDK.Api
         /// List domains Returns every domain registered under the calling tenant.
         /// </summary>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="sort">Field to order by. This list holds tens of rows per account, so every column is offered and none needs an index. (optional, default to created_at)</param>
+        /// <param name="order">Defaults to desc for the default field and asc for any other. Always tie-broken on id, so the order is total. (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListDomainsApiResponse"/>&gt;</returns>
-        public async Task<IListDomainsApiResponse> ListDomainsAsync(System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IListDomainsApiResponse> ListDomainsAsync(Option<string> sort = default, Option<string> order = default, System.Threading.CancellationToken cancellationToken = default)
         {
             UriBuilder uriBuilderLocalVar = new UriBuilder();
 
             try
             {
+                ValidateListDomains(sort, order);
+
+                FormatListDomains(ref sort, ref order);
+
                 using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
                 {
                     uriBuilderLocalVar.Host = HttpClient.BaseAddress!.Host;
@@ -3181,6 +3218,16 @@ namespace Lockally.SDK.Api
                     uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
                         ? "/v1/domains"
                         : string.Concat(HttpClient.BaseAddress.AbsolutePath.TrimEnd('/'), "/v1/domains");
+
+                    System.Collections.Specialized.NameValueCollection parseQueryStringLocalVar = System.Web.HttpUtility.ParseQueryString(string.Empty);
+
+                    if (sort.IsSet)
+                        parseQueryStringLocalVar["sort"] = ClientUtils.ParameterToString(sort.Value);
+
+                    if (order.IsSet)
+                        parseQueryStringLocalVar["order"] = ClientUtils.ParameterToString(order.Value);
+
+                    uriBuilderLocalVar.Query = parseQueryStringLocalVar.ToString();
 
                     List<TokenBase> tokenBaseLocalVars = new List<TokenBase>();
                     httpRequestMessageLocalVar.RequestUri = uriBuilderLocalVar.Uri;
@@ -3219,7 +3266,7 @@ namespace Lockally.SDK.Api
                             }
                         }
 
-                        AfterListDomainsDefaultImplementation(apiResponseLocalVar);
+                        AfterListDomainsDefaultImplementation(apiResponseLocalVar, sort, order);
 
                         Events.ExecuteOnListDomains(apiResponseLocalVar);
 
@@ -3233,7 +3280,7 @@ namespace Lockally.SDK.Api
             }
             catch(Exception e)
             {
-                OnErrorListDomainsDefaultImplementation(e, "/v1/domains", uriBuilderLocalVar.Path);
+                OnErrorListDomainsDefaultImplementation(e, "/v1/domains", uriBuilderLocalVar.Path, sort, order);
                 Events.ExecuteOnErrorListDomains(e);
                 throw;
             }

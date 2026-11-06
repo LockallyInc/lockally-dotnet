@@ -69,7 +69,9 @@ namespace Lockally.SDK.Test.Api
         [Fact (Skip = "not implemented")]
         public async Task ListApiKeysAsyncTest()
         {
-            var response = await _instance.ListApiKeysAsync();
+            Client.Option<string> sort = default!;
+            Client.Option<string> order = default!;
+            var response = await _instance.ListApiKeysAsync(sort, order);
             var model = response.Ok();
             Assert.IsType<ListApiKeys200Response>(model);
         }
@@ -82,6 +84,32 @@ namespace Lockally.SDK.Test.Api
         {
             Guid id = default!;
             await _instance.RevokeApiKeyAsync(id);
+        }
+
+        /// <summary>
+        /// Test RotateApiKey
+        /// </summary>
+        [Fact (Skip = "not implemented")]
+        public async Task RotateApiKeyAsyncTest()
+        {
+            Guid id = default!;
+            Client.Option<RotateApiKeyRequest> rotateApiKeyRequest = default!;
+            var response = await _instance.RotateApiKeyAsync(id, rotateApiKeyRequest);
+            var model = response.Created();
+            Assert.IsType<CreateApiKey201Response>(model);
+        }
+
+        /// <summary>
+        /// Test UpdateApiKey
+        /// </summary>
+        [Fact (Skip = "not implemented")]
+        public async Task UpdateApiKeyAsyncTest()
+        {
+            Guid id = default!;
+            UpdateApiKeyRequest updateApiKeyRequest = default!;
+            var response = await _instance.UpdateApiKeyAsync(id, updateApiKeyRequest);
+            var model = response.Ok();
+            Assert.IsType<APIKey>(model);
         }
     }
 }

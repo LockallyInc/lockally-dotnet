@@ -125,7 +125,9 @@ namespace Lockally.SDK.Test.Api
         [Fact (Skip = "not implemented")]
         public async Task ListDomainsAsyncTest()
         {
-            var response = await _instance.ListDomainsAsync();
+            Client.Option<string> sort = default!;
+            Client.Option<string> order = default!;
+            var response = await _instance.ListDomainsAsync(sort, order);
             var model = response.Ok();
             Assert.IsType<ListDomains200Response>(model);
         }

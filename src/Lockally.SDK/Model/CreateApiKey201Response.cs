@@ -43,8 +43,11 @@ namespace Lockally.SDK.Model
         /// <param name="secret">The full &#x60;lk_live_&lt;prefix&gt;_&lt;secret&gt;&#x60; token. Shown ONCE.</param>
         /// <param name="lastUsedAt">lastUsedAt</param>
         /// <param name="revokedAt">revokedAt</param>
+        /// <param name="test">True for an lk_test_* key: the whole request path runs but a send never reaches the mail server and nothing counts against the account.</param>
+        /// <param name="expiresAt">When the key stops authenticating. Null means it does not expire, which is how every key behaved before expiry existed. Enforced at authentication, so the key fails the first request after this moment rather than whenever a sweep runs. </param>
+        /// <param name="rotatedTo">The successor issued by &#x60;POST /v1/api-keys/{id}/rotate&#x60;. Set on the PREDECESSOR, so you can see which key replaced this one while both still work through the overlap window. </param>
         [JsonConstructor]
-        public CreateApiKey201Response(Guid id, Guid tenantId, string prefix, List<string> scopes, string label, DateTime createdAt, string secret, Option<DateTime?> lastUsedAt = default, Option<DateTime?> revokedAt = default)
+        public CreateApiKey201Response(Guid id, Guid tenantId, string prefix, List<string> scopes, string label, DateTime createdAt, string secret, Option<DateTime?> lastUsedAt = default, Option<DateTime?> revokedAt = default, Option<bool?> test = default, Option<DateTime?> expiresAt = default, Option<Guid?> rotatedTo = default)
         {
             Id = id;
             TenantId = tenantId;
@@ -55,6 +58,9 @@ namespace Lockally.SDK.Model
             Secret = secret;
             LastUsedAtOption = lastUsedAt;
             RevokedAtOption = revokedAt;
+            TestOption = test;
+            ExpiresAtOption = expiresAt;
+            RotatedToOption = rotatedTo;
             OnCreated();
         }
 
@@ -134,6 +140,48 @@ namespace Lockally.SDK.Model
         public DateTime? RevokedAt { get { return this.RevokedAtOption.Value; } set { this.RevokedAtOption = new(value); } }
 
         /// <summary>
+        /// Used to track the state of Test
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<bool?> TestOption { get; private set; }
+
+        /// <summary>
+        /// True for an lk_test_* key: the whole request path runs but a send never reaches the mail server and nothing counts against the account.
+        /// </summary>
+        /// <value>True for an lk_test_* key: the whole request path runs but a send never reaches the mail server and nothing counts against the account.</value>
+        [JsonPropertyName("test")]
+        public bool? Test { get { return this.TestOption.Value; } set { this.TestOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of ExpiresAt
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<DateTime?> ExpiresAtOption { get; private set; }
+
+        /// <summary>
+        /// When the key stops authenticating. Null means it does not expire, which is how every key behaved before expiry existed. Enforced at authentication, so the key fails the first request after this moment rather than whenever a sweep runs. 
+        /// </summary>
+        /// <value>When the key stops authenticating. Null means it does not expire, which is how every key behaved before expiry existed. Enforced at authentication, so the key fails the first request after this moment rather than whenever a sweep runs. </value>
+        [JsonPropertyName("expires_at")]
+        public DateTime? ExpiresAt { get { return this.ExpiresAtOption.Value; } set { this.ExpiresAtOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of RotatedTo
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<Guid?> RotatedToOption { get; private set; }
+
+        /// <summary>
+        /// The successor issued by &#x60;POST /v1/api-keys/{id}/rotate&#x60;. Set on the PREDECESSOR, so you can see which key replaced this one while both still work through the overlap window. 
+        /// </summary>
+        /// <value>The successor issued by &#x60;POST /v1/api-keys/{id}/rotate&#x60;. Set on the PREDECESSOR, so you can see which key replaced this one while both still work through the overlap window. </value>
+        [JsonPropertyName("rotated_to")]
+        public Guid? RotatedTo { get { return this.RotatedToOption.Value; } set { this.RotatedToOption = new(value); } }
+
+        /// <summary>
         /// Returns the string presentation of the object
         /// </summary>
         /// <returns>String presentation of the object</returns>
@@ -150,6 +198,9 @@ namespace Lockally.SDK.Model
             sb.Append("  Secret: ").Append(Secret).Append("\n");
             sb.Append("  LastUsedAt: ").Append(LastUsedAt).Append("\n");
             sb.Append("  RevokedAt: ").Append(RevokedAt).Append("\n");
+            sb.Append("  Test: ").Append(Test).Append("\n");
+            sb.Append("  ExpiresAt: ").Append(ExpiresAt).Append("\n");
+            sb.Append("  RotatedTo: ").Append(RotatedTo).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -186,6 +237,11 @@ namespace Lockally.SDK.Model
         public static string RevokedAtFormat { get; set; } = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffffK";
 
         /// <summary>
+        /// The format to use to serialize ExpiresAt
+        /// </summary>
+        public static string ExpiresAtFormat { get; set; } = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffffK";
+
+        /// <summary>
         /// Deserializes json to <see cref="CreateApiKey201Response" />
         /// </summary>
         /// <param name="utf8JsonReader"></param>
@@ -211,6 +267,9 @@ namespace Lockally.SDK.Model
             Option<string?> secret = default;
             Option<DateTime?> lastUsedAt = default;
             Option<DateTime?> revokedAt = default;
+            Option<bool?> test = default;
+            Option<DateTime?> expiresAt = default;
+            Option<Guid?> rotatedTo = default;
 
             while (utf8JsonReader.Read())
             {
@@ -253,6 +312,15 @@ namespace Lockally.SDK.Model
                             break;
                         case "revoked_at":
                             revokedAt = new Option<DateTime?>(JsonSerializer.Deserialize<DateTime>(ref utf8JsonReader, jsonSerializerOptions));
+                            break;
+                        case "test":
+                            test = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
+                            break;
+                        case "expires_at":
+                            expiresAt = new Option<DateTime?>(JsonSerializer.Deserialize<DateTime>(ref utf8JsonReader, jsonSerializerOptions));
+                            break;
+                        case "rotated_to":
+                            rotatedTo = new Option<Guid?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (Guid?)null : utf8JsonReader.GetGuid());
                             break;
                         default:
                             break;
@@ -308,7 +376,16 @@ namespace Lockally.SDK.Model
             if (revokedAt.IsSet && revokedAt.Value == null)
                 throw new ArgumentNullException(nameof(revokedAt), "Property is not nullable for class CreateApiKey201Response.");
 
-            return new CreateApiKey201Response(id.Value!.Value!, tenantId.Value!.Value!, prefix.Value!, scopes.Value!, label.Value!, createdAt.Value!.Value!, secret.Value!, lastUsedAt, revokedAt);
+            if (test.IsSet && test.Value == null)
+                throw new ArgumentNullException(nameof(test), "Property is not nullable for class CreateApiKey201Response.");
+
+            if (expiresAt.IsSet && expiresAt.Value == null)
+                throw new ArgumentNullException(nameof(expiresAt), "Property is not nullable for class CreateApiKey201Response.");
+
+            if (rotatedTo.IsSet && rotatedTo.Value == null)
+                throw new ArgumentNullException(nameof(rotatedTo), "Property is not nullable for class CreateApiKey201Response.");
+
+            return new CreateApiKey201Response(id.Value!.Value!, tenantId.Value!.Value!, prefix.Value!, scopes.Value!, label.Value!, createdAt.Value!.Value!, secret.Value!, lastUsedAt, revokedAt, test, expiresAt, rotatedTo);
         }
 
         /// <summary>
@@ -366,6 +443,15 @@ namespace Lockally.SDK.Model
 
             if (createApiKey201Response.RevokedAtOption.IsSet)
                 writer.WriteString("revoked_at", createApiKey201Response.RevokedAtOption.Value!.Value.ToString(RevokedAtFormat));
+
+            if (createApiKey201Response.TestOption.IsSet)
+                writer.WriteBoolean("test", createApiKey201Response.TestOption.Value!.Value);
+
+            if (createApiKey201Response.ExpiresAtOption.IsSet)
+                writer.WriteString("expires_at", createApiKey201Response.ExpiresAtOption.Value!.Value.ToString(ExpiresAtFormat));
+
+            if (createApiKey201Response.RotatedToOption.IsSet)
+                writer.WriteString("rotated_to", createApiKey201Response.RotatedToOption.Value!.Value);
         }
     }
 }

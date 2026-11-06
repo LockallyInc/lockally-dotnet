@@ -55,21 +55,21 @@ namespace Lockally.SDK.Test.Model
         }
 
         /// <summary>
-        /// Test the property 'MailboxEmail'
-        /// </summary>
-        [Fact]
-        public void MailboxEmailTest()
-        {
-            // TODO unit test for the property 'MailboxEmail'
-        }
-
-        /// <summary>
         /// Test the property 'RecoveryBlob'
         /// </summary>
         [Fact]
         public void RecoveryBlobTest()
         {
             // TODO unit test for the property 'RecoveryBlob'
+        }
+
+        /// <summary>
+        /// Test the property 'MailboxEmail'
+        /// </summary>
+        [Fact]
+        public void MailboxEmailTest()
+        {
+            // TODO unit test for the property 'MailboxEmail'
         }
     }
 }

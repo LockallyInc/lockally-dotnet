@@ -80,5 +80,14 @@ namespace Lockally.SDK.Test.Model
         {
             // TODO unit test for the property 'Test'
         }
+
+        /// <summary>
+        /// Test the property 'ExpiresAt'
+        /// </summary>
+        [Fact]
+        public void ExpiresAtTest()
+        {
+            // TODO unit test for the property 'ExpiresAt'
+        }
     }
 }

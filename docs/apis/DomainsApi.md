@@ -252,7 +252,7 @@ A custom Return-Path moves the envelope sender of mail sent through the API from
 
 <a id="listdomains"></a>
 # **ListDomains**
-> ListDomains200Response ListDomains ()
+> ListDomains200Response ListDomains (string sort = null, string order = null)
 
 List domains
 
@@ -260,7 +260,12 @@ Returns every domain registered under the calling tenant.
 
 
 ### Parameters
-This endpoint does not need any parameter.
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **sort** | **string** | Field to order by. This list holds tens of rows per account, so every column is offered and none needs an index. | [optional] [default to created_at] |
+| **order** | **string** | Defaults to desc for the default field and asc for any other. Always tie-broken on id, so the order is total. | [optional]  |
+
 ### Return type
 
 [**ListDomains200Response**](ListDomains200Response.md)

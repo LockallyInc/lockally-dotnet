@@ -164,6 +164,34 @@ paths:
         Returns all API keys (active and revoked) belonging to the calling
         tenant. The `secret` is **never** returned, only prefix + metadata.
       operationId: listApiKeys
+      parameters:
+      - description: "Field to order by. This list holds tens of rows per account,\
+          \ so every column is offered and none needs an index."
+        explode: true
+        in: query
+        name: sort
+        required: false
+        schema:
+          default: created_at
+          enum:
+          - label
+          - created_at
+          - last_used_at
+          - expires_at
+          type: string
+        style: form
+      - description: "Defaults to desc for the default field and asc for any other.\
+          \ Always tie-broken on id, so the order is total."
+        explode: true
+        in: query
+        name: order
+        required: false
+        schema:
+          enum:
+          - asc
+          - desc
+          type: string
+        style: form
       responses:
         "200":
           content:
@@ -215,6 +243,33 @@ paths:
     get:
       description: Returns every domain registered under the calling tenant.
       operationId: listDomains
+      parameters:
+      - description: "Field to order by. This list holds tens of rows per account,\
+          \ so every column is offered and none needs an index."
+        explode: true
+        in: query
+        name: sort
+        required: false
+        schema:
+          default: created_at
+          enum:
+          - domain
+          - created_at
+          - verified_at
+          type: string
+        style: form
+      - description: "Defaults to desc for the default field and asc for any other.\
+          \ Always tie-broken on id, so the order is total."
+        explode: true
+        in: query
+        name: order
+        required: false
+        schema:
+          enum:
+          - asc
+          - desc
+          type: string
+        style: form
       responses:
         "200":
           content:
@@ -1342,6 +1397,33 @@ paths:
   /v1/templates:
     get:
       operationId: listTemplates
+      parameters:
+      - description: "Field to order by. This list holds tens of rows per account,\
+          \ so every column is offered and none needs an index."
+        explode: true
+        in: query
+        name: sort
+        required: false
+        schema:
+          default: name
+          enum:
+          - name
+          - created_at
+          - updated_at
+          type: string
+        style: form
+      - description: "Defaults to asc for the default field and asc for any other.\
+          \ Always tie-broken on id, so the order is total."
+        explode: true
+        in: query
+        name: order
+        required: false
+        schema:
+          enum:
+          - asc
+          - desc
+          type: string
+        style: form
       responses:
         "200":
           content:
@@ -1623,6 +1705,16 @@ paths:
         schema:
           type: string
         style: form
+      - description: "Group the window by the sender's own tags: one tag, or a comma-separated\
+          \ set meaning ANY. Case-insensitive. This is the dimension that tells a\
+          \ transactional stream from a notification one."
+        explode: true
+        in: query
+        name: tag
+        required: false
+        schema:
+          type: string
+        style: form
       responses:
         "200":
           content:
@@ -1865,6 +1957,63 @@ paths:
       tags:
       - api-keys
       x-required-scope: tenant:admin
+    patch:
+      description: |
+        Changes a key's label, scopes or expiry in place, without reissuing the
+        secret.
+
+        **Every field is optional and absent means unchanged.** Renaming a key
+        does not clear its expiry. For `expires_at` there are three distinct
+        requests: omit the field to leave the expiry alone, send a timestamp to
+        set one, and send an explicit `null` to remove one.
+
+        Scopes are replaced wholesale, not merged. This endpoint does not
+        restrict which scopes you may grant, because `POST /v1/api-keys` never
+        has either: a key with `tenant:admin` can already mint a key with any
+        scope, so `tenant:admin` is root-equivalent for key management.
+
+        A revoked key cannot be updated.
+      operationId: updateApiKey
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/updateApiKey_request"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/APIKey"
+          description: The updated key.
+        "400":
+          $ref: "#/components/responses/ProblemBadRequest"
+        "401":
+          $ref: "#/components/responses/ProblemUnauthorized"
+        "403":
+          $ref: "#/components/responses/ProblemForbidden"
+        "404":
+          $ref: "#/components/responses/ProblemNotFound"
+        "409":
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+          description: The key is revoked and cannot be changed.
+      summary: Update an API key
+      tags:
+      - api-keys
+      x-required-scope: tenant:admin
   /v1/messages:
     get:
       description: |
@@ -1890,6 +2039,16 @@ paths:
         explode: true
         in: query
         name: sender
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: "Filter to messages carrying any of these tags. One tag, or a\
+          \ comma-separated set meaning ANY. Case-insensitive: the value is normalised\
+          \ the same way tags are on write."
+        explode: true
+        in: query
+        name: tag
         required: false
         schema:
           type: string
@@ -1928,6 +2087,34 @@ paths:
           default: 50
           maximum: 200
           type: integer
+        style: form
+      - description: "Field to order by. Only indexed columns are offered: an unindexed\
+          \ sort on this table is a full scan of the account's send history. status\
+          \ and sender are filters instead."
+        explode: true
+        in: query
+        name: sort
+        required: false
+        schema:
+          default: queued_at
+          enum:
+          - queued_at
+          - updated_at
+          type: string
+        style: form
+      - description: "Defaults to desc for the default field and asc for any other.\
+          \ The order is always made total by a tie-break on id, so paging cannot\
+          \ repeat or skip a row that shares a timestamp. cursor encodes queued_at,\
+          \ so combining it with another sort is a 400 rather than a wrong page."
+        explode: true
+        in: query
+        name: order
+        required: false
+        schema:
+          enum:
+          - asc
+          - desc
+          type: string
         style: form
       responses:
         "200":
@@ -2603,6 +2790,127 @@ paths:
       tags:
       - drafts
       x-required-scope: inboxes:write
+  /v1/tracking:
+    get:
+      description: |
+        Whether open and click tracking are enabled for this account. **Both
+        are off until switched on**, and an account that has never set a policy
+        reads as off rather than as an error.
+
+        `configured` reports whether this deployment holds a signing secret.
+        Without one no tracking token can be minted or verified, so tracking
+        cannot work however the flags are set, and a caller seeing
+        `track_opens: true` with nothing arriving deserves to know why.
+      operationId: getTrackingPolicy
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TrackingPolicy"
+          description: The policy.
+        "401":
+          $ref: "#/components/responses/ProblemUnauthorized"
+        "403":
+          $ref: "#/components/responses/ProblemForbidden"
+      summary: Get the engagement tracking policy
+      tags:
+      - tenant
+      x-required-scope: tenant:admin
+    put:
+      description: |
+        Enables or disables tracking for the account. Send either flag or both;
+        an omitted flag is left unchanged rather than reset.
+
+        **Enabling this changes what Lockally collects about your recipients**,
+        who have no relationship with us. You are the controller for them. What
+        is collected is a user-agent string, a timestamp, and for a click the
+        destination URL: **no IP address**, ever. The change is written to your
+        audit log.
+      operationId: updateTrackingPolicy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/updateTrackingPolicy_request"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TrackingPolicy"
+          description: The updated policy.
+        "400":
+          $ref: "#/components/responses/ProblemBadRequest"
+        "401":
+          $ref: "#/components/responses/ProblemUnauthorized"
+        "403":
+          $ref: "#/components/responses/ProblemForbidden"
+      summary: Update the engagement tracking policy
+      tags:
+      - tenant
+      x-required-scope: tenant:admin
+  /v1/api-keys/{id}/rotate:
+    post:
+      description: |
+        Issues a successor key and puts a short expiry on this one, so **both
+        work until the overlap ends**. That window is the point: without it,
+        rotation is revocation with extra steps and every caller has to swap
+        credentials in the same instant.
+
+        The successor inherits this key's scopes, its label (the label names
+        the integration, and the integration has not changed) and its test
+        flag. Its full `secret` is in this response and nowhere else.
+
+        The response's `expires_at` is the **predecessor's** deadline, so you
+        can see from the rotation itself how long you have to cut over.
+
+        A key that has already been rotated cannot be rotated again: chaining
+        overlaps would leave several live keys for one integration, which is
+        the opposite of the intent. Rotate the successor instead.
+      operationId: rotateApiKey
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/rotateApiKey_request"
+        required: false
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/createApiKey_201_response"
+          description: The successor key. Its `secret` is shown only here; `expires_at`
+            is the predecessor's deadline.
+        "400":
+          $ref: "#/components/responses/ProblemBadRequest"
+        "401":
+          $ref: "#/components/responses/ProblemUnauthorized"
+        "403":
+          $ref: "#/components/responses/ProblemForbidden"
+        "404":
+          $ref: "#/components/responses/ProblemNotFound"
+        "409":
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+          description: "The key is revoked, or was already rotated."
+      summary: Rotate an API key
+      tags:
+      - api-keys
+      x-required-scope: tenant:admin
   /v1/api-keys/{keyID}/mailboxes:
     get:
       operationId: listApiKeyMailboxes
@@ -2778,7 +3086,7 @@ paths:
       summary: List users
       tags:
       - users
-      x-required-scope: mailboxes:read
+      x-required-scope: tenant:admin
     post:
       operationId: createUser
       requestBody:
@@ -2809,10 +3117,15 @@ paths:
       summary: Create a user
       tags:
       - users
-      x-required-scope: mailboxes:write
+      x-required-scope: tenant:admin
   /v1/users/{id}:
     delete:
-      description: Soft-deletes the user by setting status to deprovisioned.
+      description: |
+        Sets the user's status to `deprovisioned` and ends their access: each
+        of their mailboxes and their console membership is disabled, app
+        passwords are revoked, and every webmail and console session ends. Their
+        mail is kept. API keys belong to the workspace and are not revoked;
+        rotate any the person had access to.
       operationId: deleteUser
       parameters:
       - explode: false
@@ -2832,10 +3145,16 @@ paths:
           $ref: "#/components/responses/ProblemForbidden"
         "404":
           $ref: "#/components/responses/ProblemNotFound"
-      summary: Delete a user
+        "409":
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+          description: "The person is the caller, or the workspace's last active admin."
+      summary: Deprovision a user
       tags:
       - users
-      x-required-scope: mailboxes:write
+      x-required-scope: tenant:admin
     get:
       operationId: getUser
       parameters:
@@ -2863,7 +3182,7 @@ paths:
       summary: Get a user
       tags:
       - users
-      x-required-scope: mailboxes:read
+      x-required-scope: tenant:admin
     parameters:
     - explode: false
       in: path
@@ -2874,6 +3193,14 @@ paths:
         type: string
       style: simple
     patch:
+      description: |
+        Setting `status` to `suspended` or `deprovisioned` takes away everything
+        the person signs in with: each of their mailboxes and their console
+        membership is disabled, app passwords are revoked, and every webmail and
+        console session ends. Setting it back to `active` restores what the
+        suspension disabled, and nothing an admin disabled for another reason.
+        API keys belong to the workspace, not to the person who created them,
+        and are not revoked; rotate any the person had access to.
       operationId: updateUser
       parameters:
       - explode: false
@@ -2905,10 +3232,16 @@ paths:
           $ref: "#/components/responses/ProblemForbidden"
         "404":
           $ref: "#/components/responses/ProblemNotFound"
+        "409":
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+          description: "The person is the caller, or the workspace's last active admin."
       summary: Update a user
       tags:
       - users
-      x-required-scope: mailboxes:write
+      x-required-scope: tenant:admin
   /v1/billing:
     get:
       operationId: getBilling
@@ -4598,6 +4931,216 @@ paths:
         format: uuid
         type: string
       style: simple
+  /v1/contacts/external/{system}/{external_id}:
+    delete:
+      operationId: deleteExternalContact
+      parameters:
+      - description: "Your label for the system the record comes from, for example\
+          \ `salesforce`, `hubspot` or `odoo`. 1 to 64 characters: lowercase letters,\
+          \ digits, dot, underscore or hyphen (upper case is folded)."
+        explode: false
+        in: path
+        name: system
+        required: true
+        schema:
+          pattern: "^[a-z0-9][a-z0-9._-]{0,63}$"
+          type: string
+        style: simple
+      - description: "The record's id in that system, kept exactly as given (case\
+          \ matters). 1 to 255 characters, no spaces. URL-encode it."
+        explode: false
+        in: path
+        name: external_id
+        required: true
+        schema:
+          maxLength: 255
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: Contact deleted
+        "401":
+          $ref: "#/components/responses/ProblemUnauthorized"
+        "403":
+          $ref: "#/components/responses/ProblemForbidden"
+        "404":
+          $ref: "#/components/responses/ProblemNotFound"
+      summary: Delete a contact by its id in another system
+      tags:
+      - contacts
+      x-required-scope: contacts:write
+    get:
+      operationId: getExternalContact
+      parameters:
+      - description: "Your label for the system the record comes from, for example\
+          \ `salesforce`, `hubspot` or `odoo`. 1 to 64 characters: lowercase letters,\
+          \ digits, dot, underscore or hyphen (upper case is folded)."
+        explode: false
+        in: path
+        name: system
+        required: true
+        schema:
+          pattern: "^[a-z0-9][a-z0-9._-]{0,63}$"
+          type: string
+        style: simple
+      - description: "The record's id in that system, kept exactly as given (case\
+          \ matters). 1 to 255 characters, no spaces. URL-encode it."
+        explode: false
+        in: path
+        name: external_id
+        required: true
+        schema:
+          maxLength: 255
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contact"
+          description: Contact details
+        "401":
+          $ref: "#/components/responses/ProblemUnauthorized"
+        "403":
+          $ref: "#/components/responses/ProblemForbidden"
+        "404":
+          $ref: "#/components/responses/ProblemNotFound"
+      summary: Get a contact by its id in another system
+      tags:
+      - contacts
+      x-required-scope: contacts:read
+    parameters:
+    - description: "Your label for the system the record comes from, for example `salesforce`,\
+        \ `hubspot` or `odoo`. 1 to 64 characters: lowercase letters, digits, dot,\
+        \ underscore or hyphen (upper case is folded)."
+      explode: false
+      in: path
+      name: system
+      required: true
+      schema:
+        pattern: "^[a-z0-9][a-z0-9._-]{0,63}$"
+        type: string
+      style: simple
+    - description: "The record's id in that system, kept exactly as given (case matters).\
+        \ 1 to 255 characters, no spaces. URL-encode it."
+      explode: false
+      in: path
+      name: external_id
+      required: true
+      schema:
+        maxLength: 255
+        type: string
+      style: simple
+    put:
+      description: "Idempotent: the path is the identity, so sending the same request\
+        \ twice cannot create a second contact, and you never need to store our id.\
+        \ Returns 201 when the contact was created and 200 when it already existed.\
+        \ The body is the full representation: a field you leave out is cleared. Email\
+        \ is an ordinary attribute, not a key, so changing it updates the same contact.\
+        \ `mailboxes:write` is also accepted."
+      operationId: upsertExternalContact
+      parameters:
+      - description: "Your label for the system the record comes from, for example\
+          \ `salesforce`, `hubspot` or `odoo`. 1 to 64 characters: lowercase letters,\
+          \ digits, dot, underscore or hyphen (upper case is folded)."
+        explode: false
+        in: path
+        name: system
+        required: true
+        schema:
+          pattern: "^[a-z0-9][a-z0-9._-]{0,63}$"
+          type: string
+        style: simple
+      - description: "The record's id in that system, kept exactly as given (case\
+          \ matters). 1 to 255 characters, no spaces. URL-encode it."
+        explode: false
+        in: path
+        name: external_id
+        required: true
+        schema:
+          maxLength: 255
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExternalContactInput"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contact"
+          description: The contact already existed and was updated
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contact"
+          description: The contact was created
+        "400":
+          $ref: "#/components/responses/ProblemBadRequest"
+        "401":
+          $ref: "#/components/responses/ProblemUnauthorized"
+        "403":
+          $ref: "#/components/responses/ProblemForbidden"
+      summary: Create or update a contact by its id in another system
+      tags:
+      - contacts
+      x-required-scope: contacts:write
+  /v1/contacts/external/{system}:
+    parameters:
+    - explode: false
+      in: path
+      name: system
+      required: true
+      schema:
+        pattern: "^[a-z0-9][a-z0-9._-]{0,63}$"
+        type: string
+      style: simple
+    put:
+      description: "For a sync. Each row stands alone: a bad row is reported in `results`\
+        \ with its index and the rest are stored, so the response is 200 whenever\
+        \ the request itself is well formed. Read `failed` and `results`. Two rows\
+        \ with the same `external_id` in one request are refused (the later one),\
+        \ because which is current cannot be known. Rerunning the same payload updates\
+        \ rather than duplicates."
+      operationId: bulkUpsertExternalContacts
+      parameters:
+      - explode: false
+        in: path
+        name: system
+        required: true
+        schema:
+          pattern: "^[a-z0-9][a-z0-9._-]{0,63}$"
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/bulkUpsertExternalContacts_request"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/bulkUpsertExternalContacts_200_response"
+          description: Per-row results
+        "400":
+          $ref: "#/components/responses/ProblemBadRequest"
+        "401":
+          $ref: "#/components/responses/ProblemUnauthorized"
+        "403":
+          $ref: "#/components/responses/ProblemForbidden"
+      summary: Create or update up to 500 contacts by their ids in another system
+      tags:
+      - contacts
+      x-required-scope: contacts:write
   /v1/contact-lists:
     get:
       operationId: listContactLists
@@ -4991,6 +5534,12 @@ paths:
       x-required-scope: mailboxes:read
   /v1/encryption/keys:
     post:
+      description: "Only the mailbox's own webmail session may call this; an API key\
+        \ is refused with 403. The private key is sealed under that mailbox's password,\
+        \ which an administrator never has. `mailbox_email`, if sent, must be the\
+        \ caller's own mailbox. A mailbox that already has a key is starting over:\
+        \ the old key is kept inactive, not destroyed, and the new one starts without\
+        \ a recovery code."
       operationId: createEncryptionKey
       requestBody:
         content:
@@ -5046,6 +5595,9 @@ paths:
       x-required-scope: mailboxes:read
   /v1/encryption/keys/{email}:
     get:
+      description: "Anyone in the workspace gets the public key. The mailbox's own\
+        \ webmail session also gets its sealed private key, its sealed recovery copy\
+        \ and the recovery state."
       operationId: getEncryptionKey
       parameters:
       - explode: false
@@ -5084,6 +5636,11 @@ paths:
       style: simple
   /v1/encryption/keys/rotate:
     post:
+      description: "Only the mailbox's own webmail session may call this; an API key\
+        \ is refused with 403. The private key is sealed under that mailbox's password,\
+        \ which an administrator never has. `mailbox_email`, if sent, must be the\
+        \ caller's own mailbox. The key pair does not change, so every message stays\
+        \ readable."
       operationId: rotateEncryptionKey
       requestBody:
         content:
@@ -5100,12 +5657,38 @@ paths:
           $ref: "#/components/responses/ProblemUnauthorized"
         "403":
           $ref: "#/components/responses/ProblemForbidden"
-      summary: Rotate an encryption key
+      summary: Re-seal an encryption key under a new password
       tags:
       - encryption
       x-required-scope: mailboxes:write
+  /v1/encryption/status:
+    get:
+      description: "For administrators: whether the add-on is on, and for each mailbox\
+        \ whether it has a key and a recovery code. Carries no key material."
+      operationId: getEncryptionStatus
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getEncryptionStatus_200_response"
+          description: Status
+        "401":
+          $ref: "#/components/responses/ProblemUnauthorized"
+        "403":
+          $ref: "#/components/responses/ProblemForbidden"
+      summary: End-to-end encryption status for the workspace
+      tags:
+      - encryption
+      x-required-scope: mailboxes:read
   /v1/encryption/recovery:
     post:
+      description: "Only the mailbox's own webmail session may call this; an API key\
+        \ is refused with 403. The private key is sealed under that mailbox's password,\
+        \ which an administrator never has. `mailbox_email`, if sent, must be the\
+        \ caller's own mailbox. The blob is the private key sealed under a recovery\
+        \ code the browser generated; the code itself is never sent. Replaces any\
+        \ earlier one."
       operationId: createEncryptionRecovery
       requestBody:
         content:
@@ -5242,8 +5825,7 @@ paths:
           content:
             application/json:
               schema:
-                description: Full tenant health report
-                type: object
+                $ref: "#/components/schemas/TenantHealthReport"
           description: Full tenant health report
         "401":
           $ref: "#/components/responses/ProblemUnauthorized"
@@ -6061,9 +6643,15 @@ paths:
           content:
             application/json:
               schema:
-                description: DNS readiness check results
-                type: object
+                $ref: "#/components/schemas/MigrationDNSCheck"
           description: DNS readiness check results
+        "400":
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+          description: "The id is not a UUID, or the migration has no mapped destination\
+            \ mailboxes to check."
         "401":
           $ref: "#/components/responses/ProblemUnauthorized"
         "403":
@@ -7083,6 +7671,29 @@ components:
       required:
       - from
       - to
+    TrackingPolicy:
+      example:
+        track_opens: true
+        track_clicks: true
+        updated_at: 2000-01-23T04:56:07.000+00:00
+        configured: true
+      properties:
+        track_opens:
+          type: boolean
+        track_clicks:
+          type: boolean
+        updated_at:
+          description: Absent until a policy has been set.
+          format: date-time
+          type: string
+        configured:
+          description: Whether this deployment holds a tracking signing secret. False
+            means tracking cannot work whatever the flags say.
+          type: boolean
+      required:
+      - configured
+      - track_clicks
+      - track_opens
     BatchResult:
       example:
         index: 0
@@ -7090,6 +7701,7 @@ components:
         message_id: message_id
         status: queued
         error: error
+        warning: warning
       properties:
         index:
           type: integer
@@ -7110,6 +7722,11 @@ components:
           type: string
         error:
           description: Present when this message failed; the others are then absent.
+          type: string
+        warning:
+          description: "Advisory, and NOT a failure. Today the only one is a template\
+            \ variable the template referenced and the request never supplied, which\
+            \ rendered as the empty string."
           type: string
     Template:
       example:
@@ -7661,6 +8278,9 @@ components:
         last_used_at: 2000-01-23T04:56:07.000+00:00
         revoked_at: 2000-01-23T04:56:07.000+00:00
         created_at: 2000-01-23T04:56:07.000+00:00
+        test: true
+        expires_at: 2000-01-23T04:56:07.000+00:00
+        rotated_to: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
       properties:
         id:
           format: uuid
@@ -7691,6 +8311,28 @@ components:
         created_at:
           format: date-time
           type: string
+        test:
+          description: "True for an lk_test_* key: the whole request path runs but\
+            \ a send never reaches the mail server and nothing counts against the\
+            \ account."
+          type: boolean
+        expires_at:
+          description: |
+            When the key stops authenticating. Null means it does not expire,
+            which is how every key behaved before expiry existed. Enforced at
+            authentication, so the key fails the first request after this
+            moment rather than whenever a sweep runs.
+          format: date-time
+          type: string
+          nullable: true
+        rotated_to:
+          description: |
+            The successor issued by `POST /v1/api-keys/{id}/rotate`. Set on the
+            PREDECESSOR, so you can see which key replaced this one while both
+            still work through the overlap window.
+          format: uuid
+          type: string
+          nullable: true
       required:
       - created_at
       - id
@@ -7713,6 +8355,11 @@ components:
         updated_at: 2000-01-23T04:56:07.000+00:00
         bounce_reason: bounce_reason
         size_bytes: 0
+        metadata:
+          key: metadata
+        tags:
+        - tags
+        - tags
       properties:
         id:
           format: uuid
@@ -7756,6 +8403,18 @@ components:
         size_bytes:
           type: integer
           nullable: true
+        metadata:
+          additionalProperties:
+            type: string
+          description: "The sender's own key/value from the send request. Always present;\
+            \ `{}` when none was set."
+        tags:
+          description: "Grouping labels, lowercased and deduplicated. Always present;\
+            \ `[]` when none were set."
+          items:
+            type: string
+          type: array
+          default: null
       required:
       - id
       - message_id
@@ -7813,6 +8472,11 @@ components:
         updated_at: 2000-01-23T04:56:07.000+00:00
         bounce_reason: bounce_reason
         size_bytes: 0
+        metadata:
+          key: metadata
+        tags:
+        - tags
+        - tags
         from: from
         to:
         - to
@@ -8645,6 +9309,8 @@ components:
         status: status
         created_at: 2000-01-23T04:56:07.000+00:00
         updated_at: 2000-01-23T04:56:07.000+00:00
+        external_system: external_system
+        external_id: external_id
       properties:
         id:
           format: uuid
@@ -8682,6 +9348,14 @@ components:
         updated_at:
           format: date-time
           type: string
+        external_system:
+          description: The system that owns this contact's external id. Absent on
+            contacts made by hand.
+          type: string
+        external_id:
+          description: The contact's id in `external_system`. Absent on contacts made
+            by hand.
+          type: string
       required:
       - contact_type
       - created_at
@@ -8691,6 +9365,48 @@ components:
       - status
       - tenant_id
       - updated_at
+    ExternalContactInput:
+      example:
+        email: email
+        name: name
+        phone: phone
+        company: company
+        notes: notes
+        contact_type: external
+        department: department
+        role: role
+        status: active
+      properties:
+        email:
+          format: email
+          type: string
+        name:
+          description: Defaults to the email address when empty.
+          type: string
+        phone:
+          type: string
+        company:
+          type: string
+        notes:
+          type: string
+        contact_type:
+          default: external
+          enum:
+          - internal
+          - external
+          type: string
+        department:
+          type: string
+        role:
+          type: string
+        status:
+          default: active
+          enum:
+          - active
+          - disabled
+          type: string
+      required:
+      - email
     ContactList:
       example:
         id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
@@ -9169,6 +9885,117 @@ components:
       - synced_message_count
       - tenant_id
       - updated_at
+    TenantHealthReport:
+      description: "The workspace health snapshot behind the console dashboard. DNS\
+        \ checks are live lookups, so a domain whose DNS cannot be read shows as a\
+        \ warning rather than an error."
+      example:
+        overall_score: 8
+        checks:
+        - key: key
+          label: label
+          status: status
+          detail: detail
+        - key: key
+          label: label
+          status: status
+          detail: detail
+        generated_at: 2000-01-23T04:56:07.000+00:00
+      properties:
+        overall_score:
+          maximum: 100
+          minimum: 0
+          type: integer
+        checks:
+          items:
+            $ref: "#/components/schemas/TenantHealthCheck"
+          type: array
+          default: null
+        generated_at:
+          format: date-time
+          type: string
+      required:
+      - checks
+      - generated_at
+      - overall_score
+    TenantHealthCheck:
+      example:
+        key: key
+        label: label
+        status: status
+        detail: detail
+      properties:
+        key:
+          description: "Stable identifier, today one of `domain_verification`, `smtp`,\
+            \ `storage`, `security`. Treat unknown keys as new checks, not errors."
+          type: string
+        label:
+          description: Human-readable name for display.
+          type: string
+        status:
+          description: "`healthy`, `warning` or `critical`."
+          type: string
+        detail:
+          type: string
+      required:
+      - detail
+      - key
+      - label
+      - status
+    MigrationDNSCheck:
+      description: "Live DNS readiness of the destination domains, for deciding when\
+        \ to cut over. `ready` is true only when every domain's MX points at Lockally\
+        \ and its SPF authorises it."
+      example:
+        ready: true
+        domains:
+        - domain: domain
+          mx: mx
+          spf: spf
+          dkim: dkim
+          dmarc: dmarc
+        - domain: domain
+          mx: mx
+          spf: spf
+          dkim: dkim
+          dmarc: dmarc
+      properties:
+        ready:
+          type: boolean
+        domains:
+          items:
+            $ref: "#/components/schemas/MigrationDomainDNS"
+          type: array
+          default: null
+      required:
+      - domains
+      - ready
+    MigrationDomainDNS:
+      description: "Each record is `healthy`, `warning` or `critical`, or empty when\
+        \ it could not be checked."
+      example:
+        domain: domain
+        mx: mx
+        spf: spf
+        dkim: dkim
+        dmarc: dmarc
+      properties:
+        domain:
+          type: string
+        mx:
+          type: string
+        spf:
+          type: string
+        dkim:
+          type: string
+        dmarc:
+          type: string
+      required:
+      - dkim
+      - dmarc
+      - domain
+      - mx
+      - spf
     MigrationEvent:
       example:
         id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
@@ -9326,6 +10153,9 @@ components:
           last_used_at: 2000-01-23T04:56:07.000+00:00
           revoked_at: 2000-01-23T04:56:07.000+00:00
           created_at: 2000-01-23T04:56:07.000+00:00
+          test: true
+          expires_at: 2000-01-23T04:56:07.000+00:00
+          rotated_to: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
         - id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
           tenant_id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
           prefix: fbl73bhj
@@ -9336,6 +10166,9 @@ components:
           last_used_at: 2000-01-23T04:56:07.000+00:00
           revoked_at: 2000-01-23T04:56:07.000+00:00
           created_at: 2000-01-23T04:56:07.000+00:00
+          test: true
+          expires_at: 2000-01-23T04:56:07.000+00:00
+          rotated_to: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
       properties:
         data:
           items:
@@ -9384,6 +10217,13 @@ components:
             records them and fires a simulated delivery webhook without
             sending mail, and counts against no limit or allowance.
           type: boolean
+        expires_at:
+          description: |
+            Optional. When the key stops authenticating. Omit it for a
+            key that does not expire. Must be in the future: an expiry
+            already past would mint a key that fails its first request.
+          format: date-time
+          type: string
       required:
       - label
       - scopes
@@ -9408,6 +10248,9 @@ components:
         last_used_at: 2000-01-23T04:56:07.000+00:00
         revoked_at: 2000-01-23T04:56:07.000+00:00
         created_at: 2000-01-23T04:56:07.000+00:00
+        test: true
+        expires_at: 2000-01-23T04:56:07.000+00:00
+        rotated_to: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
         secret: lk_live_fbl73bhj_sfvqy7y757cnvu33bgqdpyrrhq3tyyf3
     listDomains_200_response:
       example:
@@ -9820,6 +10663,67 @@ components:
             \ scheduled."
           format: date-time
           type: string
+        metadata:
+          additionalProperties:
+            type: string
+          description: |
+            Arbitrary key/value you attach to this message and get back
+            on every delivery webhook for it, so a send can be matched
+            to your own records without a lookup table.
+
+            **It never leaves Lockally.** A custom entry in `headers`
+            goes out on the wire to the recipient, which is why that is
+            not a substitute: order ids and internal identifiers do not
+            belong in a header the recipient can read.
+
+            At most 20 keys, keys at most 64 characters, values at most
+            512. **Over a limit is refused with a `400`, never
+            truncated**: a silently shortened order id succeeds and then
+            fails to match weeks later.
+
+            Not indexed and not filterable.
+          maxProperties: 20
+        tags:
+          description: |
+            Labels that group this send for filtering and analytics:
+            campaign, template, environment.
+
+            **Lowercased, trimmed and deduplicated on write**, so the
+            grouping does not depend on every caller spelling them
+            identically. `Campaign-X` is stored as `campaign-x`, and
+            either spelling matches it in a filter.
+
+            At most 10 per message after deduplication, each at most 32
+            characters. Over either is a `400` rather than a trimmed
+            list: a send missing the tag it was tagged for is worse than
+            a refusal.
+
+            Unlike `metadata`, tags ARE queryable: filter with
+            `GET /v1/messages?tag=` and group with
+            `GET /v1/messages/stats?tag=`.
+          items:
+            maxLength: 32
+            type: string
+          maxItems: 10
+          type: array
+          default: null
+        track_opens:
+          description: |
+            Override the account's open-tracking setting for this one
+            send. Omit to inherit it.
+
+            Three states matter here: `true`, `false`, and absent. A
+            transactional receipt can set `false` without the account
+            turning tracking off for its marketing.
+          type: boolean
+        track_clicks:
+          description: |
+            As `track_opens`, for click tracking. Click tracking
+            rewrites `http(s)` links in the **HTML** part only: the
+            plain-text part is never rewritten, because a visible
+            redirect URL is what recipients complain about. A
+            text-only send is therefore not click-tracked.
+          type: boolean
         attachments:
           items:
             $ref: "#/components/schemas/sendEmail_request_attachments_inner"
@@ -9888,6 +10792,18 @@ components:
           minItems: 1
           type: array
           default: null
+        variables:
+          additionalProperties:
+            type: string
+          description: |
+            Template variables every message in the batch inherits.
+            Each message's own `variables` override these key by key,
+            so shared values are written once and per-recipient ones
+            stay per-recipient.
+
+            Without this, a 500-message batch repeats every shared
+            variable 500 times: most of the payload, and 500 places for
+            one of them to differ by a typo.
       required:
       - messages
     sendEmailBatch_200_response:
@@ -9898,11 +10814,13 @@ components:
           message_id: message_id
           status: queued
           error: error
+          warning: warning
         - index: 0
           id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
           message_id: message_id
           status: queued
           error: error
+          warning: warning
       properties:
         data:
           items:
@@ -10033,6 +10951,23 @@ components:
           default: null
         paused:
           type: boolean
+    updateApiKey_request:
+      properties:
+        label:
+          description: Free-text identifier shown in the dashboard.
+          type: string
+        scopes:
+          description: Replaces the key's scopes entirely.
+          items:
+            type: string
+          minItems: 1
+          type: array
+          default: null
+        expires_at:
+          description: "A future timestamp to set an expiry, or null to remove one."
+          format: date-time
+          type: string
+          nullable: true
     listMessages_200_response:
       example:
         data:
@@ -10049,6 +10984,11 @@ components:
           updated_at: 2000-01-23T04:56:07.000+00:00
           bounce_reason: bounce_reason
           size_bytes: 0
+          metadata:
+            key: metadata
+          tags:
+          - tags
+          - tags
         - id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
           tenant_id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
           message_id: message_id
@@ -10062,6 +11002,11 @@ components:
           updated_at: 2000-01-23T04:56:07.000+00:00
           bounce_reason: bounce_reason
           size_bytes: 0
+          metadata:
+            key: metadata
+          tags:
+          - tags
+          - tags
         next_cursor: next_cursor
       properties:
         data:
@@ -10138,6 +11083,24 @@ components:
       required:
       - text
       - to
+    updateTrackingPolicy_request:
+      properties:
+        track_opens:
+          type: boolean
+        track_clicks:
+          type: boolean
+    rotateApiKey_request:
+      properties:
+        grace_seconds:
+          default: 86400
+          description: |
+            How long the old key keeps working. Defaults to 24 hours,
+            which is long enough to cut over without a scramble.
+            Capped at 30 days, because beyond that "rotated" stops
+            meaning anything.
+          maximum: 2592000
+          minimum: 0
+          type: integer
     createAiUnitsCheckout_200_response:
       example:
         authorization_url: https://openapi-generator.tech
@@ -10459,6 +11422,9 @@ components:
     signup_request:
       properties:
         slug:
+          description: "Workspace id. 3 to 63 characters of lowercase a-z, 0-9 and\
+            \ hyphens, starting and ending with a letter or digit. Anything else is\
+            \ refused with 400 Invalid workspace id."
           type: string
         display_name:
           type: string
@@ -11074,6 +12040,8 @@ components:
           status: status
           created_at: 2000-01-23T04:56:07.000+00:00
           updated_at: 2000-01-23T04:56:07.000+00:00
+          external_system: external_system
+          external_id: external_id
         - id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
           tenant_id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
           name: name
@@ -11088,6 +12056,8 @@ components:
           status: status
           created_at: 2000-01-23T04:56:07.000+00:00
           updated_at: 2000-01-23T04:56:07.000+00:00
+          external_system: external_system
+          external_id: external_id
       properties:
         data:
           items:
@@ -11175,6 +12145,133 @@ components:
             $ref: "#/components/schemas/getContactLists_200_response_data_inner"
           type: array
           default: null
+    bulkUpsertExternalContacts_request_contacts_inner:
+      allOf:
+      - $ref: "#/components/schemas/ExternalContactInput"
+      - properties:
+          external_id:
+            maxLength: 255
+            type: string
+        required:
+        - external_id
+    bulkUpsertExternalContacts_request:
+      properties:
+        contacts:
+          items:
+            $ref: "#/components/schemas/bulkUpsertExternalContacts_request_contacts_inner"
+          maxItems: 500
+          minItems: 1
+          type: array
+          default: null
+      required:
+      - contacts
+    bulkUpsertExternalContacts_200_response_results_inner:
+      example:
+        index: 5
+        external_id: external_id
+        status: created
+        contact:
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          tenant_id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          name: name
+          email: email
+          phone: phone
+          company: company
+          notes: notes
+          contact_type: internal
+          source: source
+          department: department
+          role: role
+          status: status
+          created_at: 2000-01-23T04:56:07.000+00:00
+          updated_at: 2000-01-23T04:56:07.000+00:00
+          external_system: external_system
+          external_id: external_id
+        error: error
+      properties:
+        index:
+          type: integer
+        external_id:
+          type: string
+        status:
+          enum:
+          - created
+          - updated
+          - error
+          type: string
+        contact:
+          $ref: "#/components/schemas/Contact"
+        error:
+          type: string
+      required:
+      - external_id
+      - index
+      - status
+    bulkUpsertExternalContacts_200_response:
+      example:
+        created: 0
+        updated: 6
+        failed: 1
+        results:
+        - index: 5
+          external_id: external_id
+          status: created
+          contact:
+            id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            tenant_id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            name: name
+            email: email
+            phone: phone
+            company: company
+            notes: notes
+            contact_type: internal
+            source: source
+            department: department
+            role: role
+            status: status
+            created_at: 2000-01-23T04:56:07.000+00:00
+            updated_at: 2000-01-23T04:56:07.000+00:00
+            external_system: external_system
+            external_id: external_id
+          error: error
+        - index: 5
+          external_id: external_id
+          status: created
+          contact:
+            id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            tenant_id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            name: name
+            email: email
+            phone: phone
+            company: company
+            notes: notes
+            contact_type: internal
+            source: source
+            department: department
+            role: role
+            status: status
+            created_at: 2000-01-23T04:56:07.000+00:00
+            updated_at: 2000-01-23T04:56:07.000+00:00
+            external_system: external_system
+            external_id: external_id
+          error: error
+      properties:
+        created:
+          type: integer
+        updated:
+          type: integer
+        failed:
+          type: integer
+        results:
+          items:
+            $ref: "#/components/schemas/bulkUpsertExternalContacts_200_response_results_inner"
+          type: array
+          default: null
+      required:
+      - created
+      - failed
+      - results
+      - updated
     listContactLists_200_response:
       example:
         data:
@@ -11380,13 +12477,13 @@ components:
           type: object
       required:
       - encrypted_private_key
-      - mailbox_email
       - public_key
     createEncryptionKey_201_response:
       example:
         id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
         mailbox_id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
         created_at: 2000-01-23T04:56:07.000+00:00
+        replaced_old: true
       properties:
         id:
           format: uuid
@@ -11397,6 +12494,8 @@ components:
         created_at:
           format: date-time
           type: string
+        replaced_old:
+          type: boolean
     batchLookupPublicKeys_200_response_data_inner:
       example:
         email: email
@@ -11435,6 +12534,11 @@ components:
         encrypted_private_key: encrypted_private_key
         kdf_params: "{}"
         version: 0
+        created_at: 2000-01-23T04:56:07.000+00:00
+        rotated_at: 2000-01-23T04:56:07.000+00:00
+        has_recovery: true
+        recovery_set_at: 2000-01-23T04:56:07.000+00:00
+        recovery_blob: recovery_blob
       properties:
         id:
           format: uuid
@@ -11450,6 +12554,21 @@ components:
           type: object
         version:
           type: integer
+        created_at:
+          format: date-time
+          type: string
+        rotated_at:
+          format: date-time
+          type: string
+          nullable: true
+        has_recovery:
+          type: boolean
+        recovery_set_at:
+          format: date-time
+          type: string
+          nullable: true
+        recovery_blob:
+          type: string
     rotateEncryptionKey_request:
       properties:
         mailbox_email:
@@ -11461,7 +12580,52 @@ components:
           type: object
       required:
       - encrypted_private_key
-      - mailbox_email
+    getEncryptionStatus_200_response_mailboxes_inner:
+      example:
+        email: email
+        has_key: true
+        key_created_at: 2000-01-23T04:56:07.000+00:00
+        has_recovery: true
+        recovery_set_at: 2000-01-23T04:56:07.000+00:00
+      properties:
+        email:
+          format: email
+          type: string
+        has_key:
+          type: boolean
+        key_created_at:
+          format: date-time
+          type: string
+        has_recovery:
+          type: boolean
+        recovery_set_at:
+          format: date-time
+          type: string
+    getEncryptionStatus_200_response:
+      example:
+        eligible: true
+        active: true
+        mailboxes:
+        - email: email
+          has_key: true
+          key_created_at: 2000-01-23T04:56:07.000+00:00
+          has_recovery: true
+          recovery_set_at: 2000-01-23T04:56:07.000+00:00
+        - email: email
+          has_key: true
+          key_created_at: 2000-01-23T04:56:07.000+00:00
+          has_recovery: true
+          recovery_set_at: 2000-01-23T04:56:07.000+00:00
+      properties:
+        eligible:
+          type: boolean
+        active:
+          type: boolean
+        mailboxes:
+          items:
+            $ref: "#/components/schemas/getEncryptionStatus_200_response_mailboxes_inner"
+          type: array
+          default: null
     createEncryptionRecovery_request:
       properties:
         mailbox_email:
@@ -11470,7 +12634,6 @@ components:
         recovery_blob:
           type: string
       required:
-      - mailbox_email
       - recovery_blob
     getUserInsights_200_response:
       example:

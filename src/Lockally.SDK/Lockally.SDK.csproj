@@ -12,7 +12,7 @@
     <Description>Official Lockally SDK for .NET: send email and manage domains, mailboxes and webhooks through the Lockally API.</Description>
     <Copyright>Copyright (c) Lockally</Copyright>
     <RootNamespace>Lockally.SDK</RootNamespace>
-    <Version>0.3.3</Version>
+    <Version>0.4.0</Version>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Lockally.SDK.xml</DocumentationFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/lockallyinc/lockally-dotnet.git</RepositoryUrl>

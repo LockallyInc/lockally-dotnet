@@ -55,6 +55,10 @@ docs/models/BatchLookupPublicKeys200Response.md
 docs/models/BatchLookupPublicKeys200ResponseDataInner.md
 docs/models/BatchResult.md
 docs/models/BillingStatus.md
+docs/models/BulkUpsertExternalContacts200Response.md
+docs/models/BulkUpsertExternalContacts200ResponseResultsInner.md
+docs/models/BulkUpsertExternalContactsRequest.md
+docs/models/BulkUpsertExternalContactsRequestContactsInner.md
 docs/models/Calendar.md
 docs/models/CalendarEvent.md
 docs/models/CalendarIntegration.md
@@ -104,6 +108,7 @@ docs/models/Draft.md
 docs/models/DraftList.md
 docs/models/DraftResult.md
 docs/models/ExportMailbox201Response.md
+docs/models/ExternalContactInput.md
 docs/models/GALSettings.md
 docs/models/GetAddOnStatus200Response.md
 docs/models/GetAuditSummary200Response.md
@@ -126,6 +131,8 @@ docs/models/GetDomainsStatus200Response.md
 docs/models/GetDomainsStatus200ResponseDomainsInner.md
 docs/models/GetDomainsStatus200ResponseDomainsInnerChecksInner.md
 docs/models/GetEncryptionKey200Response.md
+docs/models/GetEncryptionStatus200Response.md
+docs/models/GetEncryptionStatus200ResponseMailboxesInner.md
 docs/models/GetIPAssignment200Response.md
 docs/models/GetIntegrationsSummary200Response.md
 docs/models/GetIntegrationsSummary200ResponseApiKeysInner.md
@@ -183,6 +190,8 @@ docs/models/MessageStatsRates.md
 docs/models/MessageStatsWindow.md
 docs/models/Migration.md
 docs/models/MigrationCredential.md
+docs/models/MigrationDNSCheck.md
+docs/models/MigrationDomainDNS.md
 docs/models/MigrationEvent.md
 docs/models/MigrationMailbox.md
 docs/models/MigrationProgress.md
@@ -196,6 +205,7 @@ docs/models/ReplaceDistributionListMembersRequest.md
 docs/models/Resource.md
 docs/models/ReturnPath.md
 docs/models/ReturnPathCheck.md
+docs/models/RotateApiKeyRequest.md
 docs/models/RotateEncryptionKeyRequest.md
 docs/models/SendEmail200Response.md
 docs/models/SendEmail202Response.md
@@ -214,6 +224,8 @@ docs/models/Suppression.md
 docs/models/Template.md
 docs/models/TemplateInput.md
 docs/models/Tenant.md
+docs/models/TenantHealthCheck.md
+docs/models/TenantHealthReport.md
 docs/models/Thread.md
 docs/models/ThreadClassification.md
 docs/models/ThreadList.md
@@ -221,8 +233,10 @@ docs/models/ThreadMessage.md
 docs/models/ThreadMessageBody.md
 docs/models/ThreadMessageBodyBody.md
 docs/models/ThreadSummary.md
+docs/models/TrackingPolicy.md
 docs/models/UnitBundle.md
 docs/models/UpdateAdminRequest.md
+docs/models/UpdateApiKeyRequest.md
 docs/models/UpdateCalendarEventRequest.md
 docs/models/UpdateCalendarIntegrationRequest.md
 docs/models/UpdateCalendarMemberRequest.md
@@ -236,6 +250,7 @@ docs/models/UpdateMailboxRequest.md
 docs/models/UpdateMigrationMailboxRequest.md
 docs/models/UpdateMigrationRequest.md
 docs/models/UpdateResourceRequest.md
+docs/models/UpdateTrackingPolicyRequest.md
 docs/models/UpdateUserRequest.md
 docs/models/UpdateWebhookRequest.md
 docs/models/User.md
@@ -302,6 +317,10 @@ src/Lockally.SDK.Test/Model/BatchLookupPublicKeys200ResponseDataInnerTests.cs
 src/Lockally.SDK.Test/Model/BatchLookupPublicKeys200ResponseTests.cs
 src/Lockally.SDK.Test/Model/BatchResultTests.cs
 src/Lockally.SDK.Test/Model/BillingStatusTests.cs
+src/Lockally.SDK.Test/Model/BulkUpsertExternalContacts200ResponseResultsInnerTests.cs
+src/Lockally.SDK.Test/Model/BulkUpsertExternalContacts200ResponseTests.cs
+src/Lockally.SDK.Test/Model/BulkUpsertExternalContactsRequestContactsInnerTests.cs
+src/Lockally.SDK.Test/Model/BulkUpsertExternalContactsRequestTests.cs
 src/Lockally.SDK.Test/Model/CalendarEventTests.cs
 src/Lockally.SDK.Test/Model/CalendarIntegrationTests.cs
 src/Lockally.SDK.Test/Model/CalendarMemberTests.cs
@@ -351,6 +370,7 @@ src/Lockally.SDK.Test/Model/DraftListTests.cs
 src/Lockally.SDK.Test/Model/DraftResultTests.cs
 src/Lockally.SDK.Test/Model/DraftTests.cs
 src/Lockally.SDK.Test/Model/ExportMailbox201ResponseTests.cs
+src/Lockally.SDK.Test/Model/ExternalContactInputTests.cs
 src/Lockally.SDK.Test/Model/GALSettingsTests.cs
 src/Lockally.SDK.Test/Model/GetAddOnStatus200ResponseTests.cs
 src/Lockally.SDK.Test/Model/GetAuditSummary200ResponseTests.cs
@@ -373,6 +393,8 @@ src/Lockally.SDK.Test/Model/GetDomainsStatus200ResponseDomainsInnerChecksInnerTe
 src/Lockally.SDK.Test/Model/GetDomainsStatus200ResponseDomainsInnerTests.cs
 src/Lockally.SDK.Test/Model/GetDomainsStatus200ResponseTests.cs
 src/Lockally.SDK.Test/Model/GetEncryptionKey200ResponseTests.cs
+src/Lockally.SDK.Test/Model/GetEncryptionStatus200ResponseMailboxesInnerTests.cs
+src/Lockally.SDK.Test/Model/GetEncryptionStatus200ResponseTests.cs
 src/Lockally.SDK.Test/Model/GetIPAssignment200ResponseTests.cs
 src/Lockally.SDK.Test/Model/GetIntegrationsSummary200ResponseApiKeysInnerTests.cs
 src/Lockally.SDK.Test/Model/GetIntegrationsSummary200ResponseTests.cs
@@ -429,6 +451,8 @@ src/Lockally.SDK.Test/Model/MessageStatsTests.cs
 src/Lockally.SDK.Test/Model/MessageStatsWindowTests.cs
 src/Lockally.SDK.Test/Model/MessageTests.cs
 src/Lockally.SDK.Test/Model/MigrationCredentialTests.cs
+src/Lockally.SDK.Test/Model/MigrationDNSCheckTests.cs
+src/Lockally.SDK.Test/Model/MigrationDomainDNSTests.cs
 src/Lockally.SDK.Test/Model/MigrationEventTests.cs
 src/Lockally.SDK.Test/Model/MigrationMailboxTests.cs
 src/Lockally.SDK.Test/Model/MigrationProgressMailboxesInnerTests.cs
@@ -443,6 +467,7 @@ src/Lockally.SDK.Test/Model/ReplaceDistributionListMembersRequestTests.cs
 src/Lockally.SDK.Test/Model/ResourceTests.cs
 src/Lockally.SDK.Test/Model/ReturnPathCheckTests.cs
 src/Lockally.SDK.Test/Model/ReturnPathTests.cs
+src/Lockally.SDK.Test/Model/RotateApiKeyRequestTests.cs
 src/Lockally.SDK.Test/Model/RotateEncryptionKeyRequestTests.cs
 src/Lockally.SDK.Test/Model/SendEmail200ResponseTests.cs
 src/Lockally.SDK.Test/Model/SendEmail202ResponseTests.cs
@@ -460,6 +485,8 @@ src/Lockally.SDK.Test/Model/StartMigration202ResponseTests.cs
 src/Lockally.SDK.Test/Model/SuppressionTests.cs
 src/Lockally.SDK.Test/Model/TemplateInputTests.cs
 src/Lockally.SDK.Test/Model/TemplateTests.cs
+src/Lockally.SDK.Test/Model/TenantHealthCheckTests.cs
+src/Lockally.SDK.Test/Model/TenantHealthReportTests.cs
 src/Lockally.SDK.Test/Model/TenantTests.cs
 src/Lockally.SDK.Test/Model/ThreadClassificationTests.cs
 src/Lockally.SDK.Test/Model/ThreadListTests.cs
@@ -468,8 +495,10 @@ src/Lockally.SDK.Test/Model/ThreadMessageBodyTests.cs
 src/Lockally.SDK.Test/Model/ThreadMessageTests.cs
 src/Lockally.SDK.Test/Model/ThreadSummaryTests.cs
 src/Lockally.SDK.Test/Model/ThreadTests.cs
+src/Lockally.SDK.Test/Model/TrackingPolicyTests.cs
 src/Lockally.SDK.Test/Model/UnitBundleTests.cs
 src/Lockally.SDK.Test/Model/UpdateAdminRequestTests.cs
+src/Lockally.SDK.Test/Model/UpdateApiKeyRequestTests.cs
 src/Lockally.SDK.Test/Model/UpdateCalendarEventRequestTests.cs
 src/Lockally.SDK.Test/Model/UpdateCalendarIntegrationRequestTests.cs
 src/Lockally.SDK.Test/Model/UpdateCalendarMemberRequestTests.cs
@@ -483,6 +512,7 @@ src/Lockally.SDK.Test/Model/UpdateMailboxRequestTests.cs
 src/Lockally.SDK.Test/Model/UpdateMigrationMailboxRequestTests.cs
 src/Lockally.SDK.Test/Model/UpdateMigrationRequestTests.cs
 src/Lockally.SDK.Test/Model/UpdateResourceRequestTests.cs
+src/Lockally.SDK.Test/Model/UpdateTrackingPolicyRequestTests.cs
 src/Lockally.SDK.Test/Model/UpdateUserRequestTests.cs
 src/Lockally.SDK.Test/Model/UpdateWebhookRequestTests.cs
 src/Lockally.SDK.Test/Model/UserEventTests.cs
@@ -571,6 +601,10 @@ src/Lockally.SDK/Model/BatchLookupPublicKeys200Response.cs
 src/Lockally.SDK/Model/BatchLookupPublicKeys200ResponseDataInner.cs
 src/Lockally.SDK/Model/BatchResult.cs
 src/Lockally.SDK/Model/BillingStatus.cs
+src/Lockally.SDK/Model/BulkUpsertExternalContacts200Response.cs
+src/Lockally.SDK/Model/BulkUpsertExternalContacts200ResponseResultsInner.cs
+src/Lockally.SDK/Model/BulkUpsertExternalContactsRequest.cs
+src/Lockally.SDK/Model/BulkUpsertExternalContactsRequestContactsInner.cs
 src/Lockally.SDK/Model/Calendar.cs
 src/Lockally.SDK/Model/CalendarEvent.cs
 src/Lockally.SDK/Model/CalendarIntegration.cs
@@ -620,6 +654,7 @@ src/Lockally.SDK/Model/Draft.cs
 src/Lockally.SDK/Model/DraftList.cs
 src/Lockally.SDK/Model/DraftResult.cs
 src/Lockally.SDK/Model/ExportMailbox201Response.cs
+src/Lockally.SDK/Model/ExternalContactInput.cs
 src/Lockally.SDK/Model/GALSettings.cs
 src/Lockally.SDK/Model/GetAddOnStatus200Response.cs
 src/Lockally.SDK/Model/GetAuditSummary200Response.cs
@@ -642,6 +677,8 @@ src/Lockally.SDK/Model/GetDomainsStatus200Response.cs
 src/Lockally.SDK/Model/GetDomainsStatus200ResponseDomainsInner.cs
 src/Lockally.SDK/Model/GetDomainsStatus200ResponseDomainsInnerChecksInner.cs
 src/Lockally.SDK/Model/GetEncryptionKey200Response.cs
+src/Lockally.SDK/Model/GetEncryptionStatus200Response.cs
+src/Lockally.SDK/Model/GetEncryptionStatus200ResponseMailboxesInner.cs
 src/Lockally.SDK/Model/GetIPAssignment200Response.cs
 src/Lockally.SDK/Model/GetIntegrationsSummary200Response.cs
 src/Lockally.SDK/Model/GetIntegrationsSummary200ResponseApiKeysInner.cs
@@ -699,6 +736,8 @@ src/Lockally.SDK/Model/MessageStatsRates.cs
 src/Lockally.SDK/Model/MessageStatsWindow.cs
 src/Lockally.SDK/Model/Migration.cs
 src/Lockally.SDK/Model/MigrationCredential.cs
+src/Lockally.SDK/Model/MigrationDNSCheck.cs
+src/Lockally.SDK/Model/MigrationDomainDNS.cs
 src/Lockally.SDK/Model/MigrationEvent.cs
 src/Lockally.SDK/Model/MigrationMailbox.cs
 src/Lockally.SDK/Model/MigrationProgress.cs
@@ -712,6 +751,7 @@ src/Lockally.SDK/Model/ReplaceDistributionListMembersRequest.cs
 src/Lockally.SDK/Model/Resource.cs
 src/Lockally.SDK/Model/ReturnPath.cs
 src/Lockally.SDK/Model/ReturnPathCheck.cs
+src/Lockally.SDK/Model/RotateApiKeyRequest.cs
 src/Lockally.SDK/Model/RotateEncryptionKeyRequest.cs
 src/Lockally.SDK/Model/SendEmail200Response.cs
 src/Lockally.SDK/Model/SendEmail202Response.cs
@@ -730,6 +770,8 @@ src/Lockally.SDK/Model/Suppression.cs
 src/Lockally.SDK/Model/Template.cs
 src/Lockally.SDK/Model/TemplateInput.cs
 src/Lockally.SDK/Model/Tenant.cs
+src/Lockally.SDK/Model/TenantHealthCheck.cs
+src/Lockally.SDK/Model/TenantHealthReport.cs
 src/Lockally.SDK/Model/Thread.cs
 src/Lockally.SDK/Model/ThreadClassification.cs
 src/Lockally.SDK/Model/ThreadList.cs
@@ -737,8 +779,10 @@ src/Lockally.SDK/Model/ThreadMessage.cs
 src/Lockally.SDK/Model/ThreadMessageBody.cs
 src/Lockally.SDK/Model/ThreadMessageBodyBody.cs
 src/Lockally.SDK/Model/ThreadSummary.cs
+src/Lockally.SDK/Model/TrackingPolicy.cs
 src/Lockally.SDK/Model/UnitBundle.cs
 src/Lockally.SDK/Model/UpdateAdminRequest.cs
+src/Lockally.SDK/Model/UpdateApiKeyRequest.cs
 src/Lockally.SDK/Model/UpdateCalendarEventRequest.cs
 src/Lockally.SDK/Model/UpdateCalendarIntegrationRequest.cs
 src/Lockally.SDK/Model/UpdateCalendarMemberRequest.cs
@@ -752,6 +796,7 @@ src/Lockally.SDK/Model/UpdateMailboxRequest.cs
 src/Lockally.SDK/Model/UpdateMigrationMailboxRequest.cs
 src/Lockally.SDK/Model/UpdateMigrationRequest.cs
 src/Lockally.SDK/Model/UpdateResourceRequest.cs
+src/Lockally.SDK/Model/UpdateTrackingPolicyRequest.cs
 src/Lockally.SDK/Model/UpdateUserRequest.cs
 src/Lockally.SDK/Model/UpdateWebhookRequest.cs
 src/Lockally.SDK/Model/User.cs

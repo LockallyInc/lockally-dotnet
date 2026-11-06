@@ -309,7 +309,7 @@ namespace Lockally.SDK.Api
     /// <summary>
     /// The <see cref="IGetTenantHealthApiResponse"/>
     /// </summary>
-    public interface IGetTenantHealthApiResponse : Lockally.SDK.Client.IApiResponse, IOk<Object?>, IUnauthorized<Lockally.SDK.Model.Problem?>, IForbidden<Lockally.SDK.Model.Problem?>
+    public interface IGetTenantHealthApiResponse : Lockally.SDK.Client.IApiResponse, IOk<Lockally.SDK.Model.TenantHealthReport?>, IUnauthorized<Lockally.SDK.Model.Problem?>, IForbidden<Lockally.SDK.Model.Problem?>
     {
         /// <summary>
         /// Returns true if the response is 200 Ok
@@ -2275,11 +2275,11 @@ namespace Lockally.SDK.Api
             /// Deserializes the response if the response is 200 Ok
             /// </summary>
             /// <returns></returns>
-            public Object? Ok()
+            public Lockally.SDK.Model.TenantHealthReport? Ok()
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsOk
-                    ? System.Text.Json.JsonSerializer.Deserialize<Object>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Lockally.SDK.Model.TenantHealthReport>(RawContent, _jsonSerializerOptions)
                     : null;
             }
 
@@ -2288,7 +2288,7 @@ namespace Lockally.SDK.Api
             /// </summary>
             /// <param name="result"></param>
             /// <returns></returns>
-            public bool TryOk([NotNullWhen(true)]out Object? result)
+            public bool TryOk([NotNullWhen(true)]out Lockally.SDK.Model.TenantHealthReport? result)
             {
                 result = null;
 

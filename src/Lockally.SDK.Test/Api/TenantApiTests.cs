@@ -63,6 +63,17 @@ namespace Lockally.SDK.Test.Api
         }
 
         /// <summary>
+        /// Test GetTrackingPolicy
+        /// </summary>
+        [Fact (Skip = "not implemented")]
+        public async Task GetTrackingPolicyAsyncTest()
+        {
+            var response = await _instance.GetTrackingPolicyAsync();
+            var model = response.Ok();
+            Assert.IsType<TrackingPolicy>(model);
+        }
+
+        /// <summary>
         /// Test GetUsage
         /// </summary>
         [Fact (Skip = "not implemented")]
@@ -71,6 +82,18 @@ namespace Lockally.SDK.Test.Api
             var response = await _instance.GetUsageAsync();
             var model = response.Ok();
             Assert.IsType<GetUsage200Response>(model);
+        }
+
+        /// <summary>
+        /// Test UpdateTrackingPolicy
+        /// </summary>
+        [Fact (Skip = "not implemented")]
+        public async Task UpdateTrackingPolicyAsyncTest()
+        {
+            UpdateTrackingPolicyRequest updateTrackingPolicyRequest = default!;
+            var response = await _instance.UpdateTrackingPolicyAsync(updateTrackingPolicyRequest);
+            var model = response.Ok();
+            Assert.IsType<TrackingPolicy>(model);
         }
     }
 }

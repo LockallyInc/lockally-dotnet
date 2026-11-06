@@ -131,6 +131,12 @@ namespace Lockally.SDK.Client
                 return BillingStatus.ModeEnumToJsonValue(billingStatusModeEnum);
             if (obj is BillingStatus.StatusEnum billingStatusStatusEnum)
                 return BillingStatus.StatusEnumToJsonValue(billingStatusStatusEnum);
+            if (obj is BulkUpsertExternalContacts200ResponseResultsInner.StatusEnum bulkUpsertExternalContacts200ResponseResultsInnerStatusEnum)
+                return BulkUpsertExternalContacts200ResponseResultsInner.StatusEnumToJsonValue(bulkUpsertExternalContacts200ResponseResultsInnerStatusEnum);
+            if (obj is BulkUpsertExternalContactsRequestContactsInner.ContactTypeEnum bulkUpsertExternalContactsRequestContactsInnerContactTypeEnum)
+                return BulkUpsertExternalContactsRequestContactsInner.ContactTypeEnumToJsonValue(bulkUpsertExternalContactsRequestContactsInnerContactTypeEnum);
+            if (obj is BulkUpsertExternalContactsRequestContactsInner.StatusEnum bulkUpsertExternalContactsRequestContactsInnerStatusEnum)
+                return BulkUpsertExternalContactsRequestContactsInner.StatusEnumToJsonValue(bulkUpsertExternalContactsRequestContactsInnerStatusEnum);
             if (obj is Calendar.VisibilityEnum calendarVisibilityEnum)
                 return Calendar.VisibilityEnumToJsonValue(calendarVisibilityEnum);
             if (obj is Calendar.CalendarTypeEnum calendarCalendarTypeEnum)
@@ -191,6 +197,10 @@ namespace Lockally.SDK.Client
                 return DraftResult.StatusEnumToJsonValue(draftResultStatusEnum);
             if (obj is ExportMailbox201Response.FormatEnum exportMailbox201ResponseFormatEnum)
                 return ExportMailbox201Response.FormatEnumToJsonValue(exportMailbox201ResponseFormatEnum);
+            if (obj is ExternalContactInput.ContactTypeEnum externalContactInputContactTypeEnum)
+                return ExternalContactInput.ContactTypeEnumToJsonValue(externalContactInputContactTypeEnum);
+            if (obj is ExternalContactInput.StatusEnum externalContactInputStatusEnum)
+                return ExternalContactInput.StatusEnumToJsonValue(externalContactInputStatusEnum);
             if (obj is GALSettings.SearchVisibilityEnum gALSettingsSearchVisibilityEnum)
                 return GALSettings.SearchVisibilityEnumToJsonValue(gALSettingsSearchVisibilityEnum);
             if (obj is GetCalendarSecurity200ResponseAlertsInner.LevelEnum getCalendarSecurity200ResponseAlertsInnerLevelEnum)

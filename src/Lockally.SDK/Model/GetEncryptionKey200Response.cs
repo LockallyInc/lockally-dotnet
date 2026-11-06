@@ -40,8 +40,13 @@ namespace Lockally.SDK.Model
         /// <param name="encryptedPrivateKey">encryptedPrivateKey</param>
         /// <param name="kdfParams">kdfParams</param>
         /// <param name="varVersion">varVersion</param>
+        /// <param name="createdAt">createdAt</param>
+        /// <param name="rotatedAt">rotatedAt</param>
+        /// <param name="hasRecovery">hasRecovery</param>
+        /// <param name="recoverySetAt">recoverySetAt</param>
+        /// <param name="recoveryBlob">recoveryBlob</param>
         [JsonConstructor]
-        public GetEncryptionKey200Response(Option<Guid?> id = default, Option<string?> email = default, Option<string?> publicKey = default, Option<string?> encryptedPrivateKey = default, Option<Object?> kdfParams = default, Option<int?> varVersion = default)
+        public GetEncryptionKey200Response(Option<Guid?> id = default, Option<string?> email = default, Option<string?> publicKey = default, Option<string?> encryptedPrivateKey = default, Option<Object?> kdfParams = default, Option<int?> varVersion = default, Option<DateTime?> createdAt = default, Option<DateTime?> rotatedAt = default, Option<bool?> hasRecovery = default, Option<DateTime?> recoverySetAt = default, Option<string?> recoveryBlob = default)
         {
             IdOption = id;
             EmailOption = email;
@@ -49,6 +54,11 @@ namespace Lockally.SDK.Model
             EncryptedPrivateKeyOption = encryptedPrivateKey;
             KdfParamsOption = kdfParams;
             VarVersionOption = varVersion;
+            CreatedAtOption = createdAt;
+            RotatedAtOption = rotatedAt;
+            HasRecoveryOption = hasRecovery;
+            RecoverySetAtOption = recoverySetAt;
+            RecoveryBlobOption = recoveryBlob;
             OnCreated();
         }
 
@@ -133,6 +143,71 @@ namespace Lockally.SDK.Model
         public int? VarVersion { get { return this.VarVersionOption.Value; } set { this.VarVersionOption = new(value); } }
 
         /// <summary>
+        /// Used to track the state of CreatedAt
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<DateTime?> CreatedAtOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets CreatedAt
+        /// </summary>
+        [JsonPropertyName("created_at")]
+        public DateTime? CreatedAt { get { return this.CreatedAtOption.Value; } set { this.CreatedAtOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of RotatedAt
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<DateTime?> RotatedAtOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets RotatedAt
+        /// </summary>
+        [JsonPropertyName("rotated_at")]
+        public DateTime? RotatedAt { get { return this.RotatedAtOption.Value; } set { this.RotatedAtOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of HasRecovery
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<bool?> HasRecoveryOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets HasRecovery
+        /// </summary>
+        [JsonPropertyName("has_recovery")]
+        public bool? HasRecovery { get { return this.HasRecoveryOption.Value; } set { this.HasRecoveryOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of RecoverySetAt
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<DateTime?> RecoverySetAtOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets RecoverySetAt
+        /// </summary>
+        [JsonPropertyName("recovery_set_at")]
+        public DateTime? RecoverySetAt { get { return this.RecoverySetAtOption.Value; } set { this.RecoverySetAtOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of RecoveryBlob
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> RecoveryBlobOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets RecoveryBlob
+        /// </summary>
+        [JsonPropertyName("recovery_blob")]
+        public string? RecoveryBlob { get { return this.RecoveryBlobOption.Value; } set { this.RecoveryBlobOption = new(value); } }
+
+        /// <summary>
         /// Returns the string presentation of the object
         /// </summary>
         /// <returns>String presentation of the object</returns>
@@ -146,6 +221,11 @@ namespace Lockally.SDK.Model
             sb.Append("  EncryptedPrivateKey: ").Append(EncryptedPrivateKey).Append("\n");
             sb.Append("  KdfParams: ").Append(KdfParams).Append("\n");
             sb.Append("  VarVersion: ").Append(VarVersion).Append("\n");
+            sb.Append("  CreatedAt: ").Append(CreatedAt).Append("\n");
+            sb.Append("  RotatedAt: ").Append(RotatedAt).Append("\n");
+            sb.Append("  HasRecovery: ").Append(HasRecovery).Append("\n");
+            sb.Append("  RecoverySetAt: ").Append(RecoverySetAt).Append("\n");
+            sb.Append("  RecoveryBlob: ").Append(RecoveryBlob).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -166,6 +246,21 @@ namespace Lockally.SDK.Model
     /// </summary>
     public class GetEncryptionKey200ResponseJsonConverter : JsonConverter<GetEncryptionKey200Response>
     {
+        /// <summary>
+        /// The format to use to serialize CreatedAt
+        /// </summary>
+        public static string CreatedAtFormat { get; set; } = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffffK";
+
+        /// <summary>
+        /// The format to use to serialize RotatedAt
+        /// </summary>
+        public static string RotatedAtFormat { get; set; } = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffffK";
+
+        /// <summary>
+        /// The format to use to serialize RecoverySetAt
+        /// </summary>
+        public static string RecoverySetAtFormat { get; set; } = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffffK";
+
         /// <summary>
         /// Deserializes json to <see cref="GetEncryptionKey200Response" />
         /// </summary>
@@ -189,6 +284,11 @@ namespace Lockally.SDK.Model
             Option<string?> encryptedPrivateKey = default;
             Option<Object?> kdfParams = default;
             Option<int?> varVersion = default;
+            Option<DateTime?> createdAt = default;
+            Option<DateTime?> rotatedAt = default;
+            Option<bool?> hasRecovery = default;
+            Option<DateTime?> recoverySetAt = default;
+            Option<string?> recoveryBlob = default;
 
             while (utf8JsonReader.Read())
             {
@@ -223,6 +323,21 @@ namespace Lockally.SDK.Model
                         case "version":
                             varVersion = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
                             break;
+                        case "created_at":
+                            createdAt = new Option<DateTime?>(JsonSerializer.Deserialize<DateTime>(ref utf8JsonReader, jsonSerializerOptions));
+                            break;
+                        case "rotated_at":
+                            rotatedAt = new Option<DateTime?>(JsonSerializer.Deserialize<DateTime>(ref utf8JsonReader, jsonSerializerOptions));
+                            break;
+                        case "has_recovery":
+                            hasRecovery = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
+                            break;
+                        case "recovery_set_at":
+                            recoverySetAt = new Option<DateTime?>(JsonSerializer.Deserialize<DateTime>(ref utf8JsonReader, jsonSerializerOptions));
+                            break;
+                        case "recovery_blob":
+                            recoveryBlob = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
                         default:
                             break;
                     }
@@ -247,7 +362,22 @@ namespace Lockally.SDK.Model
             if (varVersion.IsSet && varVersion.Value == null)
                 throw new ArgumentNullException(nameof(varVersion), "Property is not nullable for class GetEncryptionKey200Response.");
 
-            return new GetEncryptionKey200Response(id, email, publicKey, encryptedPrivateKey, kdfParams, varVersion);
+            if (createdAt.IsSet && createdAt.Value == null)
+                throw new ArgumentNullException(nameof(createdAt), "Property is not nullable for class GetEncryptionKey200Response.");
+
+            if (rotatedAt.IsSet && rotatedAt.Value == null)
+                throw new ArgumentNullException(nameof(rotatedAt), "Property is not nullable for class GetEncryptionKey200Response.");
+
+            if (hasRecovery.IsSet && hasRecovery.Value == null)
+                throw new ArgumentNullException(nameof(hasRecovery), "Property is not nullable for class GetEncryptionKey200Response.");
+
+            if (recoverySetAt.IsSet && recoverySetAt.Value == null)
+                throw new ArgumentNullException(nameof(recoverySetAt), "Property is not nullable for class GetEncryptionKey200Response.");
+
+            if (recoveryBlob.IsSet && recoveryBlob.Value == null)
+                throw new ArgumentNullException(nameof(recoveryBlob), "Property is not nullable for class GetEncryptionKey200Response.");
+
+            return new GetEncryptionKey200Response(id, email, publicKey, encryptedPrivateKey, kdfParams, varVersion, createdAt, rotatedAt, hasRecovery, recoverySetAt, recoveryBlob);
         }
 
         /// <summary>
@@ -286,6 +416,9 @@ namespace Lockally.SDK.Model
             if (getEncryptionKey200Response.KdfParamsOption.IsSet && getEncryptionKey200Response.KdfParams == null)
                 throw new ArgumentNullException(nameof(getEncryptionKey200Response.KdfParams), "Property is required for class GetEncryptionKey200Response.");
 
+            if (getEncryptionKey200Response.RecoveryBlobOption.IsSet && getEncryptionKey200Response.RecoveryBlob == null)
+                throw new ArgumentNullException(nameof(getEncryptionKey200Response.RecoveryBlob), "Property is required for class GetEncryptionKey200Response.");
+
             if (getEncryptionKey200Response.IdOption.IsSet)
                 writer.WriteString("id", getEncryptionKey200Response.IdOption.Value!.Value);
 
@@ -305,6 +438,21 @@ namespace Lockally.SDK.Model
             }
             if (getEncryptionKey200Response.VarVersionOption.IsSet)
                 writer.WriteNumber("version", getEncryptionKey200Response.VarVersionOption.Value!.Value);
+
+            if (getEncryptionKey200Response.CreatedAtOption.IsSet)
+                writer.WriteString("created_at", getEncryptionKey200Response.CreatedAtOption.Value!.Value.ToString(CreatedAtFormat));
+
+            if (getEncryptionKey200Response.RotatedAtOption.IsSet)
+                writer.WriteString("rotated_at", getEncryptionKey200Response.RotatedAtOption.Value!.Value.ToString(RotatedAtFormat));
+
+            if (getEncryptionKey200Response.HasRecoveryOption.IsSet)
+                writer.WriteBoolean("has_recovery", getEncryptionKey200Response.HasRecoveryOption.Value!.Value);
+
+            if (getEncryptionKey200Response.RecoverySetAtOption.IsSet)
+                writer.WriteString("recovery_set_at", getEncryptionKey200Response.RecoverySetAtOption.Value!.Value.ToString(RecoverySetAtFormat));
+
+            if (getEncryptionKey200Response.RecoveryBlobOption.IsSet)
+                writer.WriteString("recovery_blob", getEncryptionKey200Response.RecoveryBlob);
         }
     }
 }

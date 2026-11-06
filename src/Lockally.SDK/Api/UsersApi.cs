@@ -62,10 +62,10 @@ namespace Lockally.SDK.Api
         Task<ICreateUserApiResponse?> CreateUserOrDefaultAsync(CreateUserRequest createUserRequest, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Delete a user
+        /// Deprovision a user
         /// </summary>
         /// <remarks>
-        /// Soft-deletes the user by setting status to deprovisioned.
+        /// Sets the user&#39;s status to &#x60;deprovisioned&#x60; and ends their access: each of their mailboxes and their console membership is disabled, app passwords are revoked, and every webmail and console session ends. Their mail is kept. API keys belong to the workspace and are not revoked; rotate any the person had access to. 
         /// </remarks>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="id"></param>
@@ -74,10 +74,10 @@ namespace Lockally.SDK.Api
         Task<IDeleteUserApiResponse> DeleteUserAsync(Guid id, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Delete a user
+        /// Deprovision a user
         /// </summary>
         /// <remarks>
-        /// Soft-deletes the user by setting status to deprovisioned.
+        /// Sets the user&#39;s status to &#x60;deprovisioned&#x60; and ends their access: each of their mailboxes and their console membership is disabled, app passwords are revoked, and every webmail and console session ends. Their mail is kept. API keys belong to the workspace and are not revoked; rotate any the person had access to. 
         /// </remarks>
         /// <param name="id"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
@@ -134,7 +134,7 @@ namespace Lockally.SDK.Api
         /// Update a user
         /// </summary>
         /// <remarks>
-        /// 
+        /// Setting &#x60;status&#x60; to &#x60;suspended&#x60; or &#x60;deprovisioned&#x60; takes away everything the person signs in with: each of their mailboxes and their console membership is disabled, app passwords are revoked, and every webmail and console session ends. Setting it back to &#x60;active&#x60; restores what the suspension disabled, and nothing an admin disabled for another reason. API keys belong to the workspace, not to the person who created them, and are not revoked; rotate any the person had access to. 
         /// </remarks>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="id"></param>
@@ -147,7 +147,7 @@ namespace Lockally.SDK.Api
         /// Update a user
         /// </summary>
         /// <remarks>
-        /// 
+        /// Setting &#x60;status&#x60; to &#x60;suspended&#x60; or &#x60;deprovisioned&#x60; takes away everything the person signs in with: each of their mailboxes and their console membership is disabled, app passwords are revoked, and every webmail and console session ends. Setting it back to &#x60;active&#x60; restores what the suspension disabled, and nothing an admin disabled for another reason. API keys belong to the workspace, not to the person who created them, and are not revoked; rotate any the person had access to. 
         /// </remarks>
         /// <param name="id"></param>
         /// <param name="updateUserRequest"></param>
@@ -195,7 +195,7 @@ namespace Lockally.SDK.Api
     /// <summary>
     /// The <see cref="IDeleteUserApiResponse"/>
     /// </summary>
-    public interface IDeleteUserApiResponse : Lockally.SDK.Client.IApiResponse, IUnauthorized<Lockally.SDK.Model.Problem?>, IForbidden<Lockally.SDK.Model.Problem?>, INotFound<Lockally.SDK.Model.Problem?>
+    public interface IDeleteUserApiResponse : Lockally.SDK.Client.IApiResponse, IUnauthorized<Lockally.SDK.Model.Problem?>, IForbidden<Lockally.SDK.Model.Problem?>, INotFound<Lockally.SDK.Model.Problem?>, IConflict<Lockally.SDK.Model.Problem?>
     {
         /// <summary>
         /// Returns true if the response is 204 NoContent
@@ -220,6 +220,12 @@ namespace Lockally.SDK.Api
         /// </summary>
         /// <returns></returns>
         bool IsNotFound { get; }
+
+        /// <summary>
+        /// Returns true if the response is 409 Conflict
+        /// </summary>
+        /// <returns></returns>
+        bool IsConflict { get; }
     }
 
     /// <summary>
@@ -279,7 +285,7 @@ namespace Lockally.SDK.Api
     /// <summary>
     /// The <see cref="IUpdateUserApiResponse"/>
     /// </summary>
-    public interface IUpdateUserApiResponse : Lockally.SDK.Client.IApiResponse, IOk<Lockally.SDK.Model.User?>, IBadRequest<Lockally.SDK.Model.Problem?>, IUnauthorized<Lockally.SDK.Model.Problem?>, IForbidden<Lockally.SDK.Model.Problem?>, INotFound<Lockally.SDK.Model.Problem?>
+    public interface IUpdateUserApiResponse : Lockally.SDK.Client.IApiResponse, IOk<Lockally.SDK.Model.User?>, IBadRequest<Lockally.SDK.Model.Problem?>, IUnauthorized<Lockally.SDK.Model.Problem?>, IForbidden<Lockally.SDK.Model.Problem?>, INotFound<Lockally.SDK.Model.Problem?>, IConflict<Lockally.SDK.Model.Problem?>
     {
         /// <summary>
         /// Returns true if the response is 200 Ok
@@ -310,6 +316,12 @@ namespace Lockally.SDK.Api
         /// </summary>
         /// <returns></returns>
         bool IsNotFound { get; }
+
+        /// <summary>
+        /// Returns true if the response is 409 Conflict
+        /// </summary>
+        /// <returns></returns>
+        bool IsConflict { get; }
     }
 
     /// <summary>
@@ -939,7 +951,7 @@ namespace Lockally.SDK.Api
         partial void OnErrorDeleteUser(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, Guid id);
 
         /// <summary>
-        /// Delete a user Soft-deletes the user by setting status to deprovisioned.
+        /// Deprovision a user Sets the user&#39;s status to &#x60;deprovisioned&#x60; and ends their access: each of their mailboxes and their console membership is disabled, app passwords are revoked, and every webmail and console session ends. Their mail is kept. API keys belong to the workspace and are not revoked; rotate any the person had access to. 
         /// </summary>
         /// <param name="id"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
@@ -957,7 +969,7 @@ namespace Lockally.SDK.Api
         }
 
         /// <summary>
-        /// Delete a user Soft-deletes the user by setting status to deprovisioned.
+        /// Deprovision a user Sets the user&#39;s status to &#x60;deprovisioned&#x60; and ends their access: each of their mailboxes and their console membership is disabled, app passwords are revoked, and every webmail and console session ends. Their mail is kept. API keys belong to the workspace and are not revoked; rotate any the person had access to. 
         /// </summary>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="id"></param>
@@ -1196,6 +1208,44 @@ namespace Lockally.SDK.Api
                 } catch (Exception e)
                 {
                     OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)404);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 409 Conflict
+            /// </summary>
+            /// <returns></returns>
+            public bool IsConflict => 409 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 409 Conflict
+            /// </summary>
+            /// <returns></returns>
+            public Lockally.SDK.Model.Problem? Conflict()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsConflict
+                    ? System.Text.Json.JsonSerializer.Deserialize<Lockally.SDK.Model.Problem>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 409 Conflict and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryConflict([NotNullWhen(true)]out Lockally.SDK.Model.Problem? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Conflict();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)409);
                 }
 
                 return result != null;
@@ -1954,7 +2004,7 @@ namespace Lockally.SDK.Api
         partial void OnErrorUpdateUser(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, Guid id, UpdateUserRequest updateUserRequest);
 
         /// <summary>
-        /// Update a user 
+        /// Update a user Setting &#x60;status&#x60; to &#x60;suspended&#x60; or &#x60;deprovisioned&#x60; takes away everything the person signs in with: each of their mailboxes and their console membership is disabled, app passwords are revoked, and every webmail and console session ends. Setting it back to &#x60;active&#x60; restores what the suspension disabled, and nothing an admin disabled for another reason. API keys belong to the workspace, not to the person who created them, and are not revoked; rotate any the person had access to. 
         /// </summary>
         /// <param name="id"></param>
         /// <param name="updateUserRequest"></param>
@@ -1973,7 +2023,7 @@ namespace Lockally.SDK.Api
         }
 
         /// <summary>
-        /// Update a user 
+        /// Update a user Setting &#x60;status&#x60; to &#x60;suspended&#x60; or &#x60;deprovisioned&#x60; takes away everything the person signs in with: each of their mailboxes and their console membership is disabled, app passwords are revoked, and every webmail and console session ends. Setting it back to &#x60;active&#x60; restores what the suspension disabled, and nothing an admin disabled for another reason. API keys belong to the workspace, not to the person who created them, and are not revoked; rotate any the person had access to. 
         /// </summary>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="id"></param>
@@ -2299,6 +2349,44 @@ namespace Lockally.SDK.Api
                 } catch (Exception e)
                 {
                     OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)404);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 409 Conflict
+            /// </summary>
+            /// <returns></returns>
+            public bool IsConflict => 409 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 409 Conflict
+            /// </summary>
+            /// <returns></returns>
+            public Lockally.SDK.Model.Problem? Conflict()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsConflict
+                    ? System.Text.Json.JsonSerializer.Deserialize<Lockally.SDK.Model.Problem>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 409 Conflict and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryConflict([NotNullWhen(true)]out Lockally.SDK.Model.Problem? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Conflict();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)409);
                 }
 
                 return result != null;

@@ -39,14 +39,16 @@ namespace Lockally.SDK.Model
         /// <param name="messageId">messageId</param>
         /// <param name="status">\&quot;suppressed\&quot; means every recipient of that slot was on your suppression list, and it carries no id or message_id. \&quot;delivered\&quot; only appears on a test key: the send was simulated, not transmitted.</param>
         /// <param name="error">Present when this message failed; the others are then absent.</param>
+        /// <param name="warning">Advisory, and NOT a failure. Today the only one is a template variable the template referenced and the request never supplied, which rendered as the empty string.</param>
         [JsonConstructor]
-        public BatchResult(Option<int?> index = default, Option<Guid?> id = default, Option<string?> messageId = default, Option<StatusEnum?> status = default, Option<string?> error = default)
+        public BatchResult(Option<int?> index = default, Option<Guid?> id = default, Option<string?> messageId = default, Option<StatusEnum?> status = default, Option<string?> error = default, Option<string?> warning = default)
         {
             IndexOption = index;
             IdOption = id;
             MessageIdOption = messageId;
             StatusOption = status;
             ErrorOption = error;
+            WarningOption = warning;
             OnCreated();
         }
 
@@ -215,6 +217,20 @@ namespace Lockally.SDK.Model
         public string? Error { get { return this.ErrorOption.Value; } set { this.ErrorOption = new(value); } }
 
         /// <summary>
+        /// Used to track the state of Warning
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> WarningOption { get; private set; }
+
+        /// <summary>
+        /// Advisory, and NOT a failure. Today the only one is a template variable the template referenced and the request never supplied, which rendered as the empty string.
+        /// </summary>
+        /// <value>Advisory, and NOT a failure. Today the only one is a template variable the template referenced and the request never supplied, which rendered as the empty string.</value>
+        [JsonPropertyName("warning")]
+        public string? Warning { get { return this.WarningOption.Value; } set { this.WarningOption = new(value); } }
+
+        /// <summary>
         /// Returns the string presentation of the object
         /// </summary>
         /// <returns>String presentation of the object</returns>
@@ -227,6 +243,7 @@ namespace Lockally.SDK.Model
             sb.Append("  MessageId: ").Append(MessageId).Append("\n");
             sb.Append("  Status: ").Append(Status).Append("\n");
             sb.Append("  Error: ").Append(Error).Append("\n");
+            sb.Append("  Warning: ").Append(Warning).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -269,6 +286,7 @@ namespace Lockally.SDK.Model
             Option<string?> messageId = default;
             Option<BatchResult.StatusEnum?> status = default;
             Option<string?> error = default;
+            Option<string?> warning = default;
 
             while (utf8JsonReader.Read())
             {
@@ -302,6 +320,9 @@ namespace Lockally.SDK.Model
                         case "error":
                             error = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
+                        case "warning":
+                            warning = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
                         default:
                             break;
                     }
@@ -323,7 +344,10 @@ namespace Lockally.SDK.Model
             if (error.IsSet && error.Value == null)
                 throw new ArgumentNullException(nameof(error), "Property is not nullable for class BatchResult.");
 
-            return new BatchResult(index, id, messageId, status, error);
+            if (warning.IsSet && warning.Value == null)
+                throw new ArgumentNullException(nameof(warning), "Property is not nullable for class BatchResult.");
+
+            return new BatchResult(index, id, messageId, status, error, warning);
         }
 
         /// <summary>
@@ -356,6 +380,9 @@ namespace Lockally.SDK.Model
             if (batchResult.ErrorOption.IsSet && batchResult.Error == null)
                 throw new ArgumentNullException(nameof(batchResult.Error), "Property is required for class BatchResult.");
 
+            if (batchResult.WarningOption.IsSet && batchResult.Warning == null)
+                throw new ArgumentNullException(nameof(batchResult.Warning), "Property is required for class BatchResult.");
+
             if (batchResult.IndexOption.IsSet)
                 writer.WriteNumber("index", batchResult.IndexOption.Value!.Value);
 
@@ -369,6 +396,9 @@ namespace Lockally.SDK.Model
             writer.WriteString("status", statusRawValue);
             if (batchResult.ErrorOption.IsSet)
                 writer.WriteString("error", batchResult.Error);
+
+            if (batchResult.WarningOption.IsSet)
+                writer.WriteString("warning", batchResult.Warning);
         }
     }
 }

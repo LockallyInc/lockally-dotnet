@@ -114,9 +114,11 @@ namespace Lockally.SDK.Api
         /// 
         /// </remarks>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="sort">Field to order by. This list holds tens of rows per account, so every column is offered and none needs an index. (optional, default to name)</param>
+        /// <param name="order">Defaults to asc for the default field and asc for any other. Always tie-broken on id, so the order is total. (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListTemplatesApiResponse"/>&gt;</returns>
-        Task<IListTemplatesApiResponse> ListTemplatesAsync(System.Threading.CancellationToken cancellationToken = default);
+        Task<IListTemplatesApiResponse> ListTemplatesAsync(Option<string> sort = default, Option<string> order = default, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// List templates
@@ -124,9 +126,11 @@ namespace Lockally.SDK.Api
         /// <remarks>
         /// 
         /// </remarks>
+        /// <param name="sort">Field to order by. This list holds tens of rows per account, so every column is offered and none needs an index. (optional, default to name)</param>
+        /// <param name="order">Defaults to asc for the default field and asc for any other. Always tie-broken on id, so the order is total. (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListTemplatesApiResponse"/>?&gt;</returns>
-        Task<IListTemplatesApiResponse?> ListTemplatesOrDefaultAsync(System.Threading.CancellationToken cancellationToken = default);
+        Task<IListTemplatesApiResponse?> ListTemplatesOrDefaultAsync(Option<string> sort = default, Option<string> order = default, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Update a template
@@ -1333,14 +1337,33 @@ namespace Lockally.SDK.Api
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
         }
 
+        partial void FormatListTemplates(ref Option<string> sort, ref Option<string> order);
+
+        /// <summary>
+        /// Validates the request parameters
+        /// </summary>
+        /// <param name="sort"></param>
+        /// <param name="order"></param>
+        /// <returns></returns>
+        private void ValidateListTemplates(Option<string> sort, Option<string> order)
+        {
+            if (sort.IsSet && sort.Value == null)
+                throw new ArgumentNullException(nameof(sort));
+
+            if (order.IsSet && order.Value == null)
+                throw new ArgumentNullException(nameof(order));
+        }
+
         /// <summary>
         /// Processes the server response
         /// </summary>
         /// <param name="apiResponseLocalVar"></param>
-        private void AfterListTemplatesDefaultImplementation(IListTemplatesApiResponse apiResponseLocalVar)
+        /// <param name="sort"></param>
+        /// <param name="order"></param>
+        private void AfterListTemplatesDefaultImplementation(IListTemplatesApiResponse apiResponseLocalVar, Option<string> sort, Option<string> order)
         {
             bool suppressDefaultLog = false;
-            AfterListTemplates(ref suppressDefaultLog, apiResponseLocalVar);
+            AfterListTemplates(ref suppressDefaultLog, apiResponseLocalVar, sort, order);
             if (!suppressDefaultLog)
                 Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
         }
@@ -1350,7 +1373,9 @@ namespace Lockally.SDK.Api
         /// </summary>
         /// <param name="suppressDefaultLog"></param>
         /// <param name="apiResponseLocalVar"></param>
-        partial void AfterListTemplates(ref bool suppressDefaultLog, IListTemplatesApiResponse apiResponseLocalVar);
+        /// <param name="sort"></param>
+        /// <param name="order"></param>
+        partial void AfterListTemplates(ref bool suppressDefaultLog, IListTemplatesApiResponse apiResponseLocalVar, Option<string> sort, Option<string> order);
 
         /// <summary>
         /// Logs exceptions that occur while retrieving the server response
@@ -1358,10 +1383,12 @@ namespace Lockally.SDK.Api
         /// <param name="exceptionLocalVar"></param>
         /// <param name="pathFormatLocalVar"></param>
         /// <param name="pathLocalVar"></param>
-        private void OnErrorListTemplatesDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar)
+        /// <param name="sort"></param>
+        /// <param name="order"></param>
+        private void OnErrorListTemplatesDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, Option<string> sort, Option<string> order)
         {
             bool suppressDefaultLogLocalVar = false;
-            OnErrorListTemplates(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar);
+            OnErrorListTemplates(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, sort, order);
             if (!suppressDefaultLogLocalVar)
                 Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
         }
@@ -1373,18 +1400,22 @@ namespace Lockally.SDK.Api
         /// <param name="exceptionLocalVar"></param>
         /// <param name="pathFormatLocalVar"></param>
         /// <param name="pathLocalVar"></param>
-        partial void OnErrorListTemplates(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar);
+        /// <param name="sort"></param>
+        /// <param name="order"></param>
+        partial void OnErrorListTemplates(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, Option<string> sort, Option<string> order);
 
         /// <summary>
         /// List templates 
         /// </summary>
+        /// <param name="sort">Field to order by. This list holds tens of rows per account, so every column is offered and none needs an index. (optional, default to name)</param>
+        /// <param name="order">Defaults to asc for the default field and asc for any other. Always tie-broken on id, so the order is total. (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListTemplatesApiResponse"/>&gt;</returns>
-        public async Task<IListTemplatesApiResponse?> ListTemplatesOrDefaultAsync(System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IListTemplatesApiResponse?> ListTemplatesOrDefaultAsync(Option<string> sort = default, Option<string> order = default, System.Threading.CancellationToken cancellationToken = default)
         {
             try
             {
-                return await ListTemplatesAsync(cancellationToken).ConfigureAwait(false);
+                return await ListTemplatesAsync(sort, order, cancellationToken).ConfigureAwait(false);
             }
             catch (Exception)
             {
@@ -1396,14 +1427,20 @@ namespace Lockally.SDK.Api
         /// List templates 
         /// </summary>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="sort">Field to order by. This list holds tens of rows per account, so every column is offered and none needs an index. (optional, default to name)</param>
+        /// <param name="order">Defaults to asc for the default field and asc for any other. Always tie-broken on id, so the order is total. (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListTemplatesApiResponse"/>&gt;</returns>
-        public async Task<IListTemplatesApiResponse> ListTemplatesAsync(System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IListTemplatesApiResponse> ListTemplatesAsync(Option<string> sort = default, Option<string> order = default, System.Threading.CancellationToken cancellationToken = default)
         {
             UriBuilder uriBuilderLocalVar = new UriBuilder();
 
             try
             {
+                ValidateListTemplates(sort, order);
+
+                FormatListTemplates(ref sort, ref order);
+
                 using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
                 {
                     uriBuilderLocalVar.Host = HttpClient.BaseAddress!.Host;
@@ -1412,6 +1449,16 @@ namespace Lockally.SDK.Api
                     uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
                         ? "/v1/templates"
                         : string.Concat(HttpClient.BaseAddress.AbsolutePath.TrimEnd('/'), "/v1/templates");
+
+                    System.Collections.Specialized.NameValueCollection parseQueryStringLocalVar = System.Web.HttpUtility.ParseQueryString(string.Empty);
+
+                    if (sort.IsSet)
+                        parseQueryStringLocalVar["sort"] = ClientUtils.ParameterToString(sort.Value);
+
+                    if (order.IsSet)
+                        parseQueryStringLocalVar["order"] = ClientUtils.ParameterToString(order.Value);
+
+                    uriBuilderLocalVar.Query = parseQueryStringLocalVar.ToString();
 
                     List<TokenBase> tokenBaseLocalVars = new List<TokenBase>();
                     httpRequestMessageLocalVar.RequestUri = uriBuilderLocalVar.Uri;
@@ -1450,7 +1497,7 @@ namespace Lockally.SDK.Api
                             }
                         }
 
-                        AfterListTemplatesDefaultImplementation(apiResponseLocalVar);
+                        AfterListTemplatesDefaultImplementation(apiResponseLocalVar, sort, order);
 
                         Events.ExecuteOnListTemplates(apiResponseLocalVar);
 
@@ -1464,7 +1511,7 @@ namespace Lockally.SDK.Api
             }
             catch(Exception e)
             {
-                OnErrorListTemplatesDefaultImplementation(e, "/v1/templates", uriBuilderLocalVar.Path);
+                OnErrorListTemplatesDefaultImplementation(e, "/v1/templates", uriBuilderLocalVar.Path, sort, order);
                 Events.ExecuteOnErrorListTemplates(e);
                 throw;
             }

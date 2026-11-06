@@ -152,5 +152,23 @@ namespace Lockally.SDK.Test.Model
         {
             // TODO unit test for the property 'SizeBytes'
         }
+
+        /// <summary>
+        /// Test the property 'Metadata'
+        /// </summary>
+        [Fact]
+        public void MetadataTest()
+        {
+            // TODO unit test for the property 'Metadata'
+        }
+
+        /// <summary>
+        /// Test the property 'Tags'
+        /// </summary>
+        [Fact]
+        public void TagsTest()
+        {
+            // TODO unit test for the property 'Tags'
+        }
     }
 }

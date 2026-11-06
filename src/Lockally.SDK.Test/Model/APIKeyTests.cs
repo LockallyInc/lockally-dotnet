@@ -125,5 +125,32 @@ namespace Lockally.SDK.Test.Model
         {
             // TODO unit test for the property 'RevokedAt'
         }
+
+        /// <summary>
+        /// Test the property 'Test'
+        /// </summary>
+        [Fact]
+        public void TestTest()
+        {
+            // TODO unit test for the property 'Test'
+        }
+
+        /// <summary>
+        /// Test the property 'ExpiresAt'
+        /// </summary>
+        [Fact]
+        public void ExpiresAtTest()
+        {
+            // TODO unit test for the property 'ExpiresAt'
+        }
+
+        /// <summary>
+        /// Test the property 'RotatedTo'
+        /// </summary>
+        [Fact]
+        public void RotatedToTest()
+        {
+            // TODO unit test for the property 'RotatedTo'
+        }
     }
 }

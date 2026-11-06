@@ -80,5 +80,14 @@ namespace Lockally.SDK.Test.Model
         {
             // TODO unit test for the property 'CreatedAt'
         }
+
+        /// <summary>
+        /// Test the property 'ReplacedOld'
+        /// </summary>
+        [Fact]
+        public void ReplacedOldTest()
+        {
+            // TODO unit test for the property 'ReplacedOld'
+        }
     }
 }

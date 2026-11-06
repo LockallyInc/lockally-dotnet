@@ -88,7 +88,7 @@ Get message status
 
 <a id="getmessagestats"></a>
 # **GetMessageStats**
-> MessageStats GetMessageStats (DateTime from = null, DateTime to = null, string domain = null)
+> MessageStats GetMessageStats (DateTime from = null, DateTime to = null, string domain = null, string tag = null)
 
 Aggregate delivery stats
 
@@ -102,6 +102,7 @@ Counts by delivery outcome (delivered/bounced/deferred/complaint) plus rates ove
 | **from** | **DateTime** | Window start (default 7 days ago). | [optional]  |
 | **to** | **DateTime** | Window end (default now). | [optional]  |
 | **domain** | **string** | Filter by sender domain. | [optional]  |
+| **tag** | **string** | Group the window by the sender&#39;s own tags: one tag, or a comma-separated set meaning ANY. Case-insensitive. This is the dimension that tells a transactional stream from a notification one. | [optional]  |
 
 ### Return type
 
@@ -128,7 +129,7 @@ Counts by delivery outcome (delivered/bounced/deferred/complaint) plus rates ove
 
 <a id="listmessages"></a>
 # **ListMessages**
-> ListMessages200Response ListMessages (string status = null, string sender = null, string q = null, DateTime since = null, string cursor = null, int limit = null)
+> ListMessages200Response ListMessages (string status = null, string sender = null, string tag = null, string q = null, DateTime since = null, string cursor = null, int limit = null, string sort = null, string order = null)
 
 List outbound messages
 
@@ -141,10 +142,13 @@ Returns recent outbound messages for the calling tenant, sorted newest first.
 |------|------|-------------|-------|
 | **status** | **string** |  | [optional]  |
 | **sender** | **string** | Exact match against the &#x60;from&#x60; mailbox. | [optional]  |
+| **tag** | **string** | Filter to messages carrying any of these tags. One tag, or a comma-separated set meaning ANY. Case-insensitive: the value is normalised the same way tags are on write. | [optional]  |
 | **q** | **string** | Free-text search across subject + sender. | [optional]  |
 | **since** | **DateTime** | Only messages queued at or after this RFC 3339 instant. | [optional]  |
 | **cursor** | **string** | queued_at of the prior page boundary. Pass back the &#x60;next_cursor&#x60; returned by the previous call. | [optional]  |
 | **limit** | **int** |  | [optional] [default to 50] |
+| **sort** | **string** | Field to order by. Only indexed columns are offered: an unindexed sort on this table is a full scan of the account&#39;s send history. status and sender are filters instead. | [optional] [default to queued_at] |
+| **order** | **string** | Defaults to desc for the default field and asc for any other. The order is always made total by a tie-break on id, so paging cannot repeat or skip a row that shares a timestamp. cursor encodes queued_at, so combining it with another sort is a 400 rather than a wrong page. | [optional]  |
 
 ### Return type
 

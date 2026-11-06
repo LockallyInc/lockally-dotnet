@@ -98,5 +98,14 @@ namespace Lockally.SDK.Test.Model
         {
             // TODO unit test for the property 'Error'
         }
+
+        /// <summary>
+        /// Test the property 'Warning'
+        /// </summary>
+        [Fact]
+        public void WarningTest()
+        {
+            // TODO unit test for the property 'Warning'
+        }
     }
 }

@@ -34,27 +34,21 @@ namespace Lockally.SDK.Model
         /// <summary>
         /// Initializes a new instance of the <see cref="CreateEncryptionKeyRequest" /> class.
         /// </summary>
-        /// <param name="mailboxEmail">mailboxEmail</param>
         /// <param name="publicKey">publicKey</param>
         /// <param name="encryptedPrivateKey">encryptedPrivateKey</param>
+        /// <param name="mailboxEmail">mailboxEmail</param>
         /// <param name="kdfParams">kdfParams</param>
         [JsonConstructor]
-        public CreateEncryptionKeyRequest(string mailboxEmail, string publicKey, string encryptedPrivateKey, Option<Object?> kdfParams = default)
+        public CreateEncryptionKeyRequest(string publicKey, string encryptedPrivateKey, Option<string?> mailboxEmail = default, Option<Object?> kdfParams = default)
         {
-            MailboxEmail = mailboxEmail;
             PublicKey = publicKey;
             EncryptedPrivateKey = encryptedPrivateKey;
+            MailboxEmailOption = mailboxEmail;
             KdfParamsOption = kdfParams;
             OnCreated();
         }
 
         partial void OnCreated();
-
-        /// <summary>
-        /// Gets or Sets MailboxEmail
-        /// </summary>
-        [JsonPropertyName("mailbox_email")]
-        public string MailboxEmail { get; set; }
 
         /// <summary>
         /// Gets or Sets PublicKey
@@ -67,6 +61,19 @@ namespace Lockally.SDK.Model
         /// </summary>
         [JsonPropertyName("encrypted_private_key")]
         public string EncryptedPrivateKey { get; set; }
+
+        /// <summary>
+        /// Used to track the state of MailboxEmail
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> MailboxEmailOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets MailboxEmail
+        /// </summary>
+        [JsonPropertyName("mailbox_email")]
+        public string? MailboxEmail { get { return this.MailboxEmailOption.Value; } set { this.MailboxEmailOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of KdfParams
@@ -89,9 +96,9 @@ namespace Lockally.SDK.Model
         {
             StringBuilder sb = new StringBuilder();
             sb.Append("class CreateEncryptionKeyRequest {\n");
-            sb.Append("  MailboxEmail: ").Append(MailboxEmail).Append("\n");
             sb.Append("  PublicKey: ").Append(PublicKey).Append("\n");
             sb.Append("  EncryptedPrivateKey: ").Append(EncryptedPrivateKey).Append("\n");
+            sb.Append("  MailboxEmail: ").Append(MailboxEmail).Append("\n");
             sb.Append("  KdfParams: ").Append(KdfParams).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
@@ -130,9 +137,9 @@ namespace Lockally.SDK.Model
 
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
-            Option<string?> mailboxEmail = default;
             Option<string?> publicKey = default;
             Option<string?> encryptedPrivateKey = default;
+            Option<string?> mailboxEmail = default;
             Option<Object?> kdfParams = default;
 
             while (utf8JsonReader.Read())
@@ -150,14 +157,14 @@ namespace Lockally.SDK.Model
 
                     switch (localVarJsonPropertyName)
                     {
-                        case "mailbox_email":
-                            mailboxEmail = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
                         case "public_key":
                             publicKey = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         case "encrypted_private_key":
                             encryptedPrivateKey = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
+                        case "mailbox_email":
+                            mailboxEmail = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         case "kdf_params":
                             kdfParams = new Option<Object?>(JsonSerializer.Deserialize<Object>(ref utf8JsonReader, jsonSerializerOptions)!);
@@ -168,17 +175,11 @@ namespace Lockally.SDK.Model
                 }
             }
 
-            if (!mailboxEmail.IsSet)
-                throw new ArgumentException("Property is required for class CreateEncryptionKeyRequest.", nameof(mailboxEmail));
-
             if (!publicKey.IsSet)
                 throw new ArgumentException("Property is required for class CreateEncryptionKeyRequest.", nameof(publicKey));
 
             if (!encryptedPrivateKey.IsSet)
                 throw new ArgumentException("Property is required for class CreateEncryptionKeyRequest.", nameof(encryptedPrivateKey));
-
-            if (mailboxEmail.IsSet && mailboxEmail.Value == null)
-                throw new ArgumentNullException(nameof(mailboxEmail), "Property is not nullable for class CreateEncryptionKeyRequest.");
 
             if (publicKey.IsSet && publicKey.Value == null)
                 throw new ArgumentNullException(nameof(publicKey), "Property is not nullable for class CreateEncryptionKeyRequest.");
@@ -186,10 +187,13 @@ namespace Lockally.SDK.Model
             if (encryptedPrivateKey.IsSet && encryptedPrivateKey.Value == null)
                 throw new ArgumentNullException(nameof(encryptedPrivateKey), "Property is not nullable for class CreateEncryptionKeyRequest.");
 
+            if (mailboxEmail.IsSet && mailboxEmail.Value == null)
+                throw new ArgumentNullException(nameof(mailboxEmail), "Property is not nullable for class CreateEncryptionKeyRequest.");
+
             if (kdfParams.IsSet && kdfParams.Value == null)
                 throw new ArgumentNullException(nameof(kdfParams), "Property is not nullable for class CreateEncryptionKeyRequest.");
 
-            return new CreateEncryptionKeyRequest(mailboxEmail.Value!, publicKey.Value!, encryptedPrivateKey.Value!, kdfParams);
+            return new CreateEncryptionKeyRequest(publicKey.Value!, encryptedPrivateKey.Value!, mailboxEmail, kdfParams);
         }
 
         /// <summary>
@@ -216,23 +220,24 @@ namespace Lockally.SDK.Model
         /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, CreateEncryptionKeyRequest createEncryptionKeyRequest, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (createEncryptionKeyRequest.MailboxEmail == null)
-                throw new ArgumentNullException(nameof(createEncryptionKeyRequest.MailboxEmail), "Property is required for class CreateEncryptionKeyRequest.");
-
             if (createEncryptionKeyRequest.PublicKey == null)
                 throw new ArgumentNullException(nameof(createEncryptionKeyRequest.PublicKey), "Property is required for class CreateEncryptionKeyRequest.");
 
             if (createEncryptionKeyRequest.EncryptedPrivateKey == null)
                 throw new ArgumentNullException(nameof(createEncryptionKeyRequest.EncryptedPrivateKey), "Property is required for class CreateEncryptionKeyRequest.");
 
+            if (createEncryptionKeyRequest.MailboxEmailOption.IsSet && createEncryptionKeyRequest.MailboxEmail == null)
+                throw new ArgumentNullException(nameof(createEncryptionKeyRequest.MailboxEmail), "Property is required for class CreateEncryptionKeyRequest.");
+
             if (createEncryptionKeyRequest.KdfParamsOption.IsSet && createEncryptionKeyRequest.KdfParams == null)
                 throw new ArgumentNullException(nameof(createEncryptionKeyRequest.KdfParams), "Property is required for class CreateEncryptionKeyRequest.");
-
-            writer.WriteString("mailbox_email", createEncryptionKeyRequest.MailboxEmail);
 
             writer.WriteString("public_key", createEncryptionKeyRequest.PublicKey);
 
             writer.WriteString("encrypted_private_key", createEncryptionKeyRequest.EncryptedPrivateKey);
+
+            if (createEncryptionKeyRequest.MailboxEmailOption.IsSet)
+                writer.WriteString("mailbox_email", createEncryptionKeyRequest.MailboxEmail);
 
             if (createEncryptionKeyRequest.KdfParamsOption.IsSet)
             {

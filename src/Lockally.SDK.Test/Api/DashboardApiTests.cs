@@ -114,7 +114,7 @@ namespace Lockally.SDK.Test.Api
         {
             var response = await _instance.GetTenantHealthAsync();
             var model = response.Ok();
-            Assert.IsType<Object>(model);
+            Assert.IsType<TenantHealthReport>(model);
         }
 
         /// <summary>

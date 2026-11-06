@@ -37,12 +37,14 @@ namespace Lockally.SDK.Model
         /// <param name="label">Free-text identifier shown in the dashboard.</param>
         /// <param name="scopes">Allowed scopes on this key.</param>
         /// <param name="test">Issue a test key (&#x60;lk_test_&#x60; prefix). A test key accepts sends, records them and fires a simulated delivery webhook without sending mail, and counts against no limit or allowance.  (default to false)</param>
+        /// <param name="expiresAt">Optional. When the key stops authenticating. Omit it for a key that does not expire. Must be in the future: an expiry already past would mint a key that fails its first request. </param>
         [JsonConstructor]
-        public CreateApiKeyRequest(string label, List<CreateApiKeyRequest.ScopesEnum> scopes, Option<bool?> test = default)
+        public CreateApiKeyRequest(string label, List<CreateApiKeyRequest.ScopesEnum> scopes, Option<bool?> test = default, Option<DateTime?> expiresAt = default)
         {
             Label = label;
             Scopes = scopes;
             TestOption = test;
+            ExpiresAtOption = expiresAt;
             OnCreated();
         }
 
@@ -382,6 +384,20 @@ namespace Lockally.SDK.Model
         public bool? Test { get { return this.TestOption.Value; } set { this.TestOption = new(value); } }
 
         /// <summary>
+        /// Used to track the state of ExpiresAt
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<DateTime?> ExpiresAtOption { get; private set; }
+
+        /// <summary>
+        /// Optional. When the key stops authenticating. Omit it for a key that does not expire. Must be in the future: an expiry already past would mint a key that fails its first request. 
+        /// </summary>
+        /// <value>Optional. When the key stops authenticating. Omit it for a key that does not expire. Must be in the future: an expiry already past would mint a key that fails its first request. </value>
+        [JsonPropertyName("expires_at")]
+        public DateTime? ExpiresAt { get { return this.ExpiresAtOption.Value; } set { this.ExpiresAtOption = new(value); } }
+
+        /// <summary>
         /// Returns the string presentation of the object
         /// </summary>
         /// <returns>String presentation of the object</returns>
@@ -392,6 +408,7 @@ namespace Lockally.SDK.Model
             sb.Append("  Label: ").Append(Label).Append("\n");
             sb.Append("  Scopes: ").Append(Scopes).Append("\n");
             sb.Append("  Test: ").Append(Test).Append("\n");
+            sb.Append("  ExpiresAt: ").Append(ExpiresAt).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -413,6 +430,11 @@ namespace Lockally.SDK.Model
     public class CreateApiKeyRequestJsonConverter : JsonConverter<CreateApiKeyRequest>
     {
         /// <summary>
+        /// The format to use to serialize ExpiresAt
+        /// </summary>
+        public static string ExpiresAtFormat { get; set; } = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffffK";
+
+        /// <summary>
         /// Deserializes json to <see cref="CreateApiKeyRequest" />
         /// </summary>
         /// <param name="utf8JsonReader"></param>
@@ -432,6 +454,7 @@ namespace Lockally.SDK.Model
             Option<string?> label = default;
             Option<List<CreateApiKeyRequest.ScopesEnum>?> scopes = default;
             Option<bool?> test = default;
+            Option<DateTime?> expiresAt = default;
 
             while (utf8JsonReader.Read())
             {
@@ -457,6 +480,9 @@ namespace Lockally.SDK.Model
                         case "test":
                             test = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
                             break;
+                        case "expires_at":
+                            expiresAt = new Option<DateTime?>(JsonSerializer.Deserialize<DateTime>(ref utf8JsonReader, jsonSerializerOptions));
+                            break;
                         default:
                             break;
                     }
@@ -478,7 +504,10 @@ namespace Lockally.SDK.Model
             if (test.IsSet && test.Value == null)
                 throw new ArgumentNullException(nameof(test), "Property is not nullable for class CreateApiKeyRequest.");
 
-            return new CreateApiKeyRequest(label.Value!, scopes.Value!, test);
+            if (expiresAt.IsSet && expiresAt.Value == null)
+                throw new ArgumentNullException(nameof(expiresAt), "Property is not nullable for class CreateApiKeyRequest.");
+
+            return new CreateApiKeyRequest(label.Value!, scopes.Value!, test, expiresAt);
         }
 
         /// <summary>
@@ -517,6 +546,9 @@ namespace Lockally.SDK.Model
             JsonSerializer.Serialize(writer, createApiKeyRequest.Scopes, jsonSerializerOptions);
             if (createApiKeyRequest.TestOption.IsSet)
                 writer.WriteBoolean("test", createApiKeyRequest.TestOption.Value!.Value);
+
+            if (createApiKeyRequest.ExpiresAtOption.IsSet)
+                writer.WriteString("expires_at", createApiKeyRequest.ExpiresAtOption.Value!.Value.ToString(ExpiresAtFormat));
         }
     }
 }

@@ -5,7 +5,7 @@ All URIs are relative to *https://api.lockally.com*
 | Method | HTTP request | Description |
 |--------|--------------|-------------|
 | [**CreateUser**](UsersApi.md#createuser) | **POST** /v1/users | Create a user |
-| [**DeleteUser**](UsersApi.md#deleteuser) | **DELETE** /v1/users/{id} | Delete a user |
+| [**DeleteUser**](UsersApi.md#deleteuser) | **DELETE** /v1/users/{id} | Deprovision a user |
 | [**GetUser**](UsersApi.md#getuser) | **GET** /v1/users/{id} | Get a user |
 | [**ListUsers**](UsersApi.md#listusers) | **GET** /v1/users | List users |
 | [**UpdateUser**](UsersApi.md#updateuser) | **PATCH** /v1/users/{id} | Update a user |
@@ -52,9 +52,9 @@ Create a user
 # **DeleteUser**
 > void DeleteUser (Guid id)
 
-Delete a user
+Deprovision a user
 
-Soft-deletes the user by setting status to deprovisioned.
+Sets the user's status to `deprovisioned` and ends their access: each of their mailboxes and their console membership is disabled, app passwords are revoked, and every webmail and console session ends. Their mail is kept. API keys belong to the workspace and are not revoked; rotate any the person had access to. 
 
 
 ### Parameters
@@ -84,6 +84,7 @@ void (empty response body)
 | **401** | Missing, malformed, or invalid API key. |  -  |
 | **403** | API key lacks the required scope. |  -  |
 | **404** | Resource not found under the calling tenant. |  -  |
+| **409** | The person is the caller, or the workspace&#39;s last active admin. |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -166,6 +167,8 @@ List users
 
 Update a user
 
+Setting `status` to `suspended` or `deprovisioned` takes away everything the person signs in with: each of their mailboxes and their console membership is disabled, app passwords are revoked, and every webmail and console session ends. Setting it back to `active` restores what the suspension disabled, and nothing an admin disabled for another reason. API keys belong to the workspace, not to the person who created them, and are not revoked; rotate any the person had access to. 
+
 
 ### Parameters
 
@@ -196,6 +199,7 @@ Update a user
 | **401** | Missing, malformed, or invalid API key. |  -  |
 | **403** | API key lacks the required scope. |  -  |
 | **404** | Resource not found under the calling tenant. |  -  |
+| **409** | The person is the caller, or the workspace&#39;s last active admin. |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 

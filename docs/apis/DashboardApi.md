@@ -174,7 +174,7 @@ This endpoint does not need any parameter.
 
 <a id="gettenanthealth"></a>
 # **GetTenantHealth**
-> Object GetTenantHealth ()
+> TenantHealthReport GetTenantHealth ()
 
 Full tenant health report
 
@@ -183,7 +183,7 @@ Full tenant health report
 This endpoint does not need any parameter.
 ### Return type
 
-**Object**
+[**TenantHealthReport**](TenantHealthReport.md)
 
 ### Authorization
 

@@ -119,13 +119,18 @@ Get a template
 
 <a id="listtemplates"></a>
 # **ListTemplates**
-> ListTemplates200Response ListTemplates ()
+> ListTemplates200Response ListTemplates (string sort = null, string order = null)
 
 List templates
 
 
 ### Parameters
-This endpoint does not need any parameter.
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **sort** | **string** | Field to order by. This list holds tens of rows per account, so every column is offered and none needs an index. | [optional] [default to name] |
+| **order** | **string** | Defaults to asc for the default field and asc for any other. Always tie-broken on id, so the order is total. | [optional]  |
+
 ### Return type
 
 [**ListTemplates200Response**](ListTemplates200Response.md)

@@ -65,6 +65,10 @@ namespace Lockally.SDK.Client
             _jsonOptions.Converters.Add(new BatchLookupPublicKeys200ResponseDataInnerJsonConverter());
             _jsonOptions.Converters.Add(new BatchResultJsonConverter());
             _jsonOptions.Converters.Add(new BillingStatusJsonConverter());
+            _jsonOptions.Converters.Add(new BulkUpsertExternalContacts200ResponseJsonConverter());
+            _jsonOptions.Converters.Add(new BulkUpsertExternalContacts200ResponseResultsInnerJsonConverter());
+            _jsonOptions.Converters.Add(new BulkUpsertExternalContactsRequestJsonConverter());
+            _jsonOptions.Converters.Add(new BulkUpsertExternalContactsRequestContactsInnerJsonConverter());
             _jsonOptions.Converters.Add(new CalendarJsonConverter());
             _jsonOptions.Converters.Add(new CalendarEventJsonConverter());
             _jsonOptions.Converters.Add(new CalendarIntegrationJsonConverter());
@@ -114,6 +118,7 @@ namespace Lockally.SDK.Client
             _jsonOptions.Converters.Add(new DraftListJsonConverter());
             _jsonOptions.Converters.Add(new DraftResultJsonConverter());
             _jsonOptions.Converters.Add(new ExportMailbox201ResponseJsonConverter());
+            _jsonOptions.Converters.Add(new ExternalContactInputJsonConverter());
             _jsonOptions.Converters.Add(new GALSettingsJsonConverter());
             _jsonOptions.Converters.Add(new GetAddOnStatus200ResponseJsonConverter());
             _jsonOptions.Converters.Add(new GetAuditSummary200ResponseJsonConverter());
@@ -136,6 +141,8 @@ namespace Lockally.SDK.Client
             _jsonOptions.Converters.Add(new GetDomainsStatus200ResponseDomainsInnerJsonConverter());
             _jsonOptions.Converters.Add(new GetDomainsStatus200ResponseDomainsInnerChecksInnerJsonConverter());
             _jsonOptions.Converters.Add(new GetEncryptionKey200ResponseJsonConverter());
+            _jsonOptions.Converters.Add(new GetEncryptionStatus200ResponseJsonConverter());
+            _jsonOptions.Converters.Add(new GetEncryptionStatus200ResponseMailboxesInnerJsonConverter());
             _jsonOptions.Converters.Add(new GetIPAssignment200ResponseJsonConverter());
             _jsonOptions.Converters.Add(new GetIntegrationsSummary200ResponseJsonConverter());
             _jsonOptions.Converters.Add(new GetIntegrationsSummary200ResponseApiKeysInnerJsonConverter());
@@ -193,6 +200,8 @@ namespace Lockally.SDK.Client
             _jsonOptions.Converters.Add(new MessageStatsWindowJsonConverter());
             _jsonOptions.Converters.Add(new MigrationJsonConverter());
             _jsonOptions.Converters.Add(new MigrationCredentialJsonConverter());
+            _jsonOptions.Converters.Add(new MigrationDNSCheckJsonConverter());
+            _jsonOptions.Converters.Add(new MigrationDomainDNSJsonConverter());
             _jsonOptions.Converters.Add(new MigrationEventJsonConverter());
             _jsonOptions.Converters.Add(new MigrationMailboxJsonConverter());
             _jsonOptions.Converters.Add(new MigrationProgressJsonConverter());
@@ -206,6 +215,7 @@ namespace Lockally.SDK.Client
             _jsonOptions.Converters.Add(new ResourceJsonConverter());
             _jsonOptions.Converters.Add(new ReturnPathJsonConverter());
             _jsonOptions.Converters.Add(new ReturnPathCheckJsonConverter());
+            _jsonOptions.Converters.Add(new RotateApiKeyRequestJsonConverter());
             _jsonOptions.Converters.Add(new RotateEncryptionKeyRequestJsonConverter());
             _jsonOptions.Converters.Add(new SendEmail200ResponseJsonConverter());
             _jsonOptions.Converters.Add(new SendEmail202ResponseJsonConverter());
@@ -224,6 +234,8 @@ namespace Lockally.SDK.Client
             _jsonOptions.Converters.Add(new TemplateJsonConverter());
             _jsonOptions.Converters.Add(new TemplateInputJsonConverter());
             _jsonOptions.Converters.Add(new TenantJsonConverter());
+            _jsonOptions.Converters.Add(new TenantHealthCheckJsonConverter());
+            _jsonOptions.Converters.Add(new TenantHealthReportJsonConverter());
             _jsonOptions.Converters.Add(new ThreadJsonConverter());
             _jsonOptions.Converters.Add(new ThreadClassificationJsonConverter());
             _jsonOptions.Converters.Add(new ThreadListJsonConverter());
@@ -231,8 +243,10 @@ namespace Lockally.SDK.Client
             _jsonOptions.Converters.Add(new ThreadMessageBodyJsonConverter());
             _jsonOptions.Converters.Add(new ThreadMessageBodyBodyJsonConverter());
             _jsonOptions.Converters.Add(new ThreadSummaryJsonConverter());
+            _jsonOptions.Converters.Add(new TrackingPolicyJsonConverter());
             _jsonOptions.Converters.Add(new UnitBundleJsonConverter());
             _jsonOptions.Converters.Add(new UpdateAdminRequestJsonConverter());
+            _jsonOptions.Converters.Add(new UpdateApiKeyRequestJsonConverter());
             _jsonOptions.Converters.Add(new UpdateCalendarEventRequestJsonConverter());
             _jsonOptions.Converters.Add(new UpdateCalendarIntegrationRequestJsonConverter());
             _jsonOptions.Converters.Add(new UpdateCalendarMemberRequestJsonConverter());
@@ -246,6 +260,7 @@ namespace Lockally.SDK.Client
             _jsonOptions.Converters.Add(new UpdateMigrationMailboxRequestJsonConverter());
             _jsonOptions.Converters.Add(new UpdateMigrationRequestJsonConverter());
             _jsonOptions.Converters.Add(new UpdateResourceRequestJsonConverter());
+            _jsonOptions.Converters.Add(new UpdateTrackingPolicyRequestJsonConverter());
             _jsonOptions.Converters.Add(new UpdateUserRequestJsonConverter());
             _jsonOptions.Converters.Add(new UpdateWebhookRequestJsonConverter());
             _jsonOptions.Converters.Add(new UserJsonConverter());

@@ -16,6 +16,8 @@ Name | Type | Description | Notes
 **Subject** | **string** |  | [optional] 
 **BounceReason** | **string** |  | [optional] 
 **SizeBytes** | **int** |  | [optional] 
+**Metadata** | **Dictionary&lt;string, string&gt;** | The sender&#39;s own key/value from the send request. Always present; &#x60;{}&#x60; when none was set. | [optional] 
+**Tags** | **List&lt;string&gt;** | Grouping labels, lowercased and deduplicated. Always present; &#x60;[]&#x60; when none were set. | [optional] 
 **From** | **string** |  | [optional] 
 **To** | **List&lt;string&gt;** |  | [optional] 
 **Cc** | **List&lt;string&gt;** |  | [optional] 

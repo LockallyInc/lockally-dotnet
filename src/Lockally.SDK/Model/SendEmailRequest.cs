@@ -48,9 +48,13 @@ namespace Lockally.SDK.Model
         /// <param name="templateId">Render subject/text/html from a stored template (GET /v1/templates). Mutually exclusive with inline subject/text/html.</param>
         /// <param name="variables">Values substituted into the template&#39;s {{variable}} placeholders.</param>
         /// <param name="sendAt">Schedule delivery for a future RFC3339 time (≤ 30 days out). Omit or past &#x3D; send now. Cancel with DELETE /v1/messages/{id} while scheduled.</param>
+        /// <param name="metadata">Arbitrary key/value you attach to this message and get back on every delivery webhook for it, so a send can be matched to your own records without a lookup table.  **It never leaves Lockally.** A custom entry in &#x60;headers&#x60; goes out on the wire to the recipient, which is why that is not a substitute: order ids and internal identifiers do not belong in a header the recipient can read.  At most 20 keys, keys at most 64 characters, values at most 512. **Over a limit is refused with a &#x60;400&#x60;, never truncated**: a silently shortened order id succeeds and then fails to match weeks later.  Not indexed and not filterable. </param>
+        /// <param name="tags">Labels that group this send for filtering and analytics: campaign, template, environment.  **Lowercased, trimmed and deduplicated on write**, so the grouping does not depend on every caller spelling them identically. &#x60;Campaign-X&#x60; is stored as &#x60;campaign-x&#x60;, and either spelling matches it in a filter.  At most 10 per message after deduplication, each at most 32 characters. Over either is a &#x60;400&#x60; rather than a trimmed list: a send missing the tag it was tagged for is worse than a refusal.  Unlike &#x60;metadata&#x60;, tags ARE queryable: filter with &#x60;GET /v1/messages?tag&#x3D;&#x60; and group with &#x60;GET /v1/messages/stats?tag&#x3D;&#x60;. </param>
+        /// <param name="trackOpens">Override the account&#39;s open-tracking setting for this one send. Omit to inherit it.  Three states matter here: &#x60;true&#x60;, &#x60;false&#x60;, and absent. A transactional receipt can set &#x60;false&#x60; without the account turning tracking off for its marketing. </param>
+        /// <param name="trackClicks">As &#x60;track_opens&#x60;, for click tracking. Click tracking rewrites &#x60;http(s)&#x60; links in the **HTML** part only: the plain-text part is never rewritten, because a visible redirect URL is what recipients complain about. A text-only send is therefore not click-tracked. </param>
         /// <param name="attachments">attachments</param>
         [JsonConstructor]
-        public SendEmailRequest(string from, List<string> to, Option<List<string>?> cc = default, Option<List<string>?> bcc = default, Option<string?> subject = default, Option<string?> text = default, Option<string?> html = default, Option<Dictionary<string, string>?> headers = default, Option<string?> replyTo = default, Option<string?> replyToName = default, Option<bool?> unsubscribe = default, Option<Guid?> templateId = default, Option<Dictionary<string, string>?> variables = default, Option<DateTime?> sendAt = default, Option<List<SendEmailRequestAttachmentsInner>?> attachments = default)
+        public SendEmailRequest(string from, List<string> to, Option<List<string>?> cc = default, Option<List<string>?> bcc = default, Option<string?> subject = default, Option<string?> text = default, Option<string?> html = default, Option<Dictionary<string, string>?> headers = default, Option<string?> replyTo = default, Option<string?> replyToName = default, Option<bool?> unsubscribe = default, Option<Guid?> templateId = default, Option<Dictionary<string, string>?> variables = default, Option<DateTime?> sendAt = default, Option<Dictionary<string, string>?> metadata = default, Option<List<string>?> tags = default, Option<bool?> trackOpens = default, Option<bool?> trackClicks = default, Option<List<SendEmailRequestAttachmentsInner>?> attachments = default)
         {
             From = from;
             To = to;
@@ -66,6 +70,10 @@ namespace Lockally.SDK.Model
             TemplateIdOption = templateId;
             VariablesOption = variables;
             SendAtOption = sendAt;
+            MetadataOption = metadata;
+            TagsOption = tags;
+            TrackOpensOption = trackOpens;
+            TrackClicksOption = trackClicks;
             AttachmentsOption = attachments;
             OnCreated();
         }
@@ -249,6 +257,62 @@ namespace Lockally.SDK.Model
         public DateTime? SendAt { get { return this.SendAtOption.Value; } set { this.SendAtOption = new(value); } }
 
         /// <summary>
+        /// Used to track the state of Metadata
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<Dictionary<string, string>?> MetadataOption { get; private set; }
+
+        /// <summary>
+        /// Arbitrary key/value you attach to this message and get back on every delivery webhook for it, so a send can be matched to your own records without a lookup table.  **It never leaves Lockally.** A custom entry in &#x60;headers&#x60; goes out on the wire to the recipient, which is why that is not a substitute: order ids and internal identifiers do not belong in a header the recipient can read.  At most 20 keys, keys at most 64 characters, values at most 512. **Over a limit is refused with a &#x60;400&#x60;, never truncated**: a silently shortened order id succeeds and then fails to match weeks later.  Not indexed and not filterable. 
+        /// </summary>
+        /// <value>Arbitrary key/value you attach to this message and get back on every delivery webhook for it, so a send can be matched to your own records without a lookup table.  **It never leaves Lockally.** A custom entry in &#x60;headers&#x60; goes out on the wire to the recipient, which is why that is not a substitute: order ids and internal identifiers do not belong in a header the recipient can read.  At most 20 keys, keys at most 64 characters, values at most 512. **Over a limit is refused with a &#x60;400&#x60;, never truncated**: a silently shortened order id succeeds and then fails to match weeks later.  Not indexed and not filterable. </value>
+        [JsonPropertyName("metadata")]
+        public Dictionary<string, string>? Metadata { get { return this.MetadataOption.Value; } set { this.MetadataOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of Tags
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<List<string>?> TagsOption { get; private set; }
+
+        /// <summary>
+        /// Labels that group this send for filtering and analytics: campaign, template, environment.  **Lowercased, trimmed and deduplicated on write**, so the grouping does not depend on every caller spelling them identically. &#x60;Campaign-X&#x60; is stored as &#x60;campaign-x&#x60;, and either spelling matches it in a filter.  At most 10 per message after deduplication, each at most 32 characters. Over either is a &#x60;400&#x60; rather than a trimmed list: a send missing the tag it was tagged for is worse than a refusal.  Unlike &#x60;metadata&#x60;, tags ARE queryable: filter with &#x60;GET /v1/messages?tag&#x3D;&#x60; and group with &#x60;GET /v1/messages/stats?tag&#x3D;&#x60;. 
+        /// </summary>
+        /// <value>Labels that group this send for filtering and analytics: campaign, template, environment.  **Lowercased, trimmed and deduplicated on write**, so the grouping does not depend on every caller spelling them identically. &#x60;Campaign-X&#x60; is stored as &#x60;campaign-x&#x60;, and either spelling matches it in a filter.  At most 10 per message after deduplication, each at most 32 characters. Over either is a &#x60;400&#x60; rather than a trimmed list: a send missing the tag it was tagged for is worse than a refusal.  Unlike &#x60;metadata&#x60;, tags ARE queryable: filter with &#x60;GET /v1/messages?tag&#x3D;&#x60; and group with &#x60;GET /v1/messages/stats?tag&#x3D;&#x60;. </value>
+        [JsonPropertyName("tags")]
+        public List<string>? Tags { get { return this.TagsOption.Value; } set { this.TagsOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of TrackOpens
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<bool?> TrackOpensOption { get; private set; }
+
+        /// <summary>
+        /// Override the account&#39;s open-tracking setting for this one send. Omit to inherit it.  Three states matter here: &#x60;true&#x60;, &#x60;false&#x60;, and absent. A transactional receipt can set &#x60;false&#x60; without the account turning tracking off for its marketing. 
+        /// </summary>
+        /// <value>Override the account&#39;s open-tracking setting for this one send. Omit to inherit it.  Three states matter here: &#x60;true&#x60;, &#x60;false&#x60;, and absent. A transactional receipt can set &#x60;false&#x60; without the account turning tracking off for its marketing. </value>
+        [JsonPropertyName("track_opens")]
+        public bool? TrackOpens { get { return this.TrackOpensOption.Value; } set { this.TrackOpensOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of TrackClicks
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<bool?> TrackClicksOption { get; private set; }
+
+        /// <summary>
+        /// As &#x60;track_opens&#x60;, for click tracking. Click tracking rewrites &#x60;http(s)&#x60; links in the **HTML** part only: the plain-text part is never rewritten, because a visible redirect URL is what recipients complain about. A text-only send is therefore not click-tracked. 
+        /// </summary>
+        /// <value>As &#x60;track_opens&#x60;, for click tracking. Click tracking rewrites &#x60;http(s)&#x60; links in the **HTML** part only: the plain-text part is never rewritten, because a visible redirect URL is what recipients complain about. A text-only send is therefore not click-tracked. </value>
+        [JsonPropertyName("track_clicks")]
+        public bool? TrackClicks { get { return this.TrackClicksOption.Value; } set { this.TrackClicksOption = new(value); } }
+
+        /// <summary>
         /// Used to track the state of Attachments
         /// </summary>
         [JsonIgnore]
@@ -283,6 +347,10 @@ namespace Lockally.SDK.Model
             sb.Append("  TemplateId: ").Append(TemplateId).Append("\n");
             sb.Append("  Variables: ").Append(Variables).Append("\n");
             sb.Append("  SendAt: ").Append(SendAt).Append("\n");
+            sb.Append("  Metadata: ").Append(Metadata).Append("\n");
+            sb.Append("  Tags: ").Append(Tags).Append("\n");
+            sb.Append("  TrackOpens: ").Append(TrackOpens).Append("\n");
+            sb.Append("  TrackClicks: ").Append(TrackClicks).Append("\n");
             sb.Append("  Attachments: ").Append(Attachments).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
@@ -340,6 +408,10 @@ namespace Lockally.SDK.Model
             Option<Guid?> templateId = default;
             Option<Dictionary<string, string>?> variables = default;
             Option<DateTime?> sendAt = default;
+            Option<Dictionary<string, string>?> metadata = default;
+            Option<List<string>?> tags = default;
+            Option<bool?> trackOpens = default;
+            Option<bool?> trackClicks = default;
             Option<List<SendEmailRequestAttachmentsInner>?> attachments = default;
 
             while (utf8JsonReader.Read())
@@ -399,6 +471,18 @@ namespace Lockally.SDK.Model
                         case "send_at":
                             sendAt = new Option<DateTime?>(JsonSerializer.Deserialize<DateTime>(ref utf8JsonReader, jsonSerializerOptions));
                             break;
+                        case "metadata":
+                            metadata = new Option<Dictionary<string, string>?>(JsonSerializer.Deserialize<Dictionary<string, string>>(ref utf8JsonReader, jsonSerializerOptions)!);
+                            break;
+                        case "tags":
+                            tags = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions)!);
+                            break;
+                        case "track_opens":
+                            trackOpens = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
+                            break;
+                        case "track_clicks":
+                            trackClicks = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
+                            break;
                         case "attachments":
                             attachments = new Option<List<SendEmailRequestAttachmentsInner>?>(JsonSerializer.Deserialize<List<SendEmailRequestAttachmentsInner>>(ref utf8JsonReader, jsonSerializerOptions)!);
                             break;
@@ -456,10 +540,22 @@ namespace Lockally.SDK.Model
             if (sendAt.IsSet && sendAt.Value == null)
                 throw new ArgumentNullException(nameof(sendAt), "Property is not nullable for class SendEmailRequest.");
 
+            if (metadata.IsSet && metadata.Value == null)
+                throw new ArgumentNullException(nameof(metadata), "Property is not nullable for class SendEmailRequest.");
+
+            if (tags.IsSet && tags.Value == null)
+                throw new ArgumentNullException(nameof(tags), "Property is not nullable for class SendEmailRequest.");
+
+            if (trackOpens.IsSet && trackOpens.Value == null)
+                throw new ArgumentNullException(nameof(trackOpens), "Property is not nullable for class SendEmailRequest.");
+
+            if (trackClicks.IsSet && trackClicks.Value == null)
+                throw new ArgumentNullException(nameof(trackClicks), "Property is not nullable for class SendEmailRequest.");
+
             if (attachments.IsSet && attachments.Value == null)
                 throw new ArgumentNullException(nameof(attachments), "Property is not nullable for class SendEmailRequest.");
 
-            return new SendEmailRequest(from.Value!, to.Value!, cc, bcc, subject, text, html, headers, replyTo, replyToName, unsubscribe, templateId, variables, sendAt, attachments);
+            return new SendEmailRequest(from.Value!, to.Value!, cc, bcc, subject, text, html, headers, replyTo, replyToName, unsubscribe, templateId, variables, sendAt, metadata, tags, trackOpens, trackClicks, attachments);
         }
 
         /// <summary>
@@ -519,6 +615,12 @@ namespace Lockally.SDK.Model
             if (sendEmailRequest.VariablesOption.IsSet && sendEmailRequest.Variables == null)
                 throw new ArgumentNullException(nameof(sendEmailRequest.Variables), "Property is required for class SendEmailRequest.");
 
+            if (sendEmailRequest.MetadataOption.IsSet && sendEmailRequest.Metadata == null)
+                throw new ArgumentNullException(nameof(sendEmailRequest.Metadata), "Property is required for class SendEmailRequest.");
+
+            if (sendEmailRequest.TagsOption.IsSet && sendEmailRequest.Tags == null)
+                throw new ArgumentNullException(nameof(sendEmailRequest.Tags), "Property is required for class SendEmailRequest.");
+
             if (sendEmailRequest.AttachmentsOption.IsSet && sendEmailRequest.Attachments == null)
                 throw new ArgumentNullException(nameof(sendEmailRequest.Attachments), "Property is required for class SendEmailRequest.");
 
@@ -569,6 +671,22 @@ namespace Lockally.SDK.Model
             }
             if (sendEmailRequest.SendAtOption.IsSet)
                 writer.WriteString("send_at", sendEmailRequest.SendAtOption.Value!.Value.ToString(SendAtFormat));
+
+            if (sendEmailRequest.MetadataOption.IsSet)
+            {
+                writer.WritePropertyName("metadata");
+                JsonSerializer.Serialize(writer, sendEmailRequest.Metadata, jsonSerializerOptions);
+            }
+            if (sendEmailRequest.TagsOption.IsSet)
+            {
+                writer.WritePropertyName("tags");
+                JsonSerializer.Serialize(writer, sendEmailRequest.Tags, jsonSerializerOptions);
+            }
+            if (sendEmailRequest.TrackOpensOption.IsSet)
+                writer.WriteBoolean("track_opens", sendEmailRequest.TrackOpensOption.Value!.Value);
+
+            if (sendEmailRequest.TrackClicksOption.IsSet)
+                writer.WriteBoolean("track_clicks", sendEmailRequest.TrackClicksOption.Value!.Value);
 
             if (sendEmailRequest.AttachmentsOption.IsSet)
             {

@@ -65,7 +65,7 @@ namespace Lockally.SDK.Api
         /// Upload an encryption key pair
         /// </summary>
         /// <remarks>
-        /// 
+        /// Only the mailbox&#39;s own webmail session may call this; an API key is refused with 403. The private key is sealed under that mailbox&#39;s password, which an administrator never has. &#x60;mailbox_email&#x60;, if sent, must be the caller&#39;s own mailbox. A mailbox that already has a key is starting over: the old key is kept inactive, not destroyed, and the new one starts without a recovery code.
         /// </remarks>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="createEncryptionKeyRequest"></param>
@@ -77,7 +77,7 @@ namespace Lockally.SDK.Api
         /// Upload an encryption key pair
         /// </summary>
         /// <remarks>
-        /// 
+        /// Only the mailbox&#39;s own webmail session may call this; an API key is refused with 403. The private key is sealed under that mailbox&#39;s password, which an administrator never has. &#x60;mailbox_email&#x60;, if sent, must be the caller&#39;s own mailbox. A mailbox that already has a key is starting over: the old key is kept inactive, not destroyed, and the new one starts without a recovery code.
         /// </remarks>
         /// <param name="createEncryptionKeyRequest"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
@@ -88,7 +88,7 @@ namespace Lockally.SDK.Api
         /// Store an encryption recovery blob
         /// </summary>
         /// <remarks>
-        /// 
+        /// Only the mailbox&#39;s own webmail session may call this; an API key is refused with 403. The private key is sealed under that mailbox&#39;s password, which an administrator never has. &#x60;mailbox_email&#x60;, if sent, must be the caller&#39;s own mailbox. The blob is the private key sealed under a recovery code the browser generated; the code itself is never sent. Replaces any earlier one.
         /// </remarks>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="createEncryptionRecoveryRequest"></param>
@@ -100,7 +100,7 @@ namespace Lockally.SDK.Api
         /// Store an encryption recovery blob
         /// </summary>
         /// <remarks>
-        /// 
+        /// Only the mailbox&#39;s own webmail session may call this; an API key is refused with 403. The private key is sealed under that mailbox&#39;s password, which an administrator never has. &#x60;mailbox_email&#x60;, if sent, must be the caller&#39;s own mailbox. The blob is the private key sealed under a recovery code the browser generated; the code itself is never sent. Replaces any earlier one.
         /// </remarks>
         /// <param name="createEncryptionRecoveryRequest"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
@@ -111,7 +111,7 @@ namespace Lockally.SDK.Api
         /// Get encryption key for a mailbox
         /// </summary>
         /// <remarks>
-        /// 
+        /// Anyone in the workspace gets the public key. The mailbox&#39;s own webmail session also gets its sealed private key, its sealed recovery copy and the recovery state.
         /// </remarks>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="email"></param>
@@ -123,7 +123,7 @@ namespace Lockally.SDK.Api
         /// Get encryption key for a mailbox
         /// </summary>
         /// <remarks>
-        /// 
+        /// Anyone in the workspace gets the public key. The mailbox&#39;s own webmail session also gets its sealed private key, its sealed recovery copy and the recovery state.
         /// </remarks>
         /// <param name="email"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
@@ -131,10 +131,31 @@ namespace Lockally.SDK.Api
         Task<IGetEncryptionKeyApiResponse?> GetEncryptionKeyOrDefaultAsync(string email, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Rotate an encryption key
+        /// End-to-end encryption status for the workspace
         /// </summary>
         /// <remarks>
-        /// 
+        /// For administrators: whether the add-on is on, and for each mailbox whether it has a key and a recovery code. Carries no key material.
+        /// </remarks>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IGetEncryptionStatusApiResponse"/>&gt;</returns>
+        Task<IGetEncryptionStatusApiResponse> GetEncryptionStatusAsync(System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// End-to-end encryption status for the workspace
+        /// </summary>
+        /// <remarks>
+        /// For administrators: whether the add-on is on, and for each mailbox whether it has a key and a recovery code. Carries no key material.
+        /// </remarks>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IGetEncryptionStatusApiResponse"/>?&gt;</returns>
+        Task<IGetEncryptionStatusApiResponse?> GetEncryptionStatusOrDefaultAsync(System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Re-seal an encryption key under a new password
+        /// </summary>
+        /// <remarks>
+        /// Only the mailbox&#39;s own webmail session may call this; an API key is refused with 403. The private key is sealed under that mailbox&#39;s password, which an administrator never has. &#x60;mailbox_email&#x60;, if sent, must be the caller&#39;s own mailbox. The key pair does not change, so every message stays readable.
         /// </remarks>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="rotateEncryptionKeyRequest"></param>
@@ -143,10 +164,10 @@ namespace Lockally.SDK.Api
         Task<IRotateEncryptionKeyApiResponse> RotateEncryptionKeyAsync(RotateEncryptionKeyRequest rotateEncryptionKeyRequest, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Rotate an encryption key
+        /// Re-seal an encryption key under a new password
         /// </summary>
         /// <remarks>
-        /// 
+        /// Only the mailbox&#39;s own webmail session may call this; an API key is refused with 403. The private key is sealed under that mailbox&#39;s password, which an administrator never has. &#x60;mailbox_email&#x60;, if sent, must be the caller&#39;s own mailbox. The key pair does not change, so every message stays readable.
         /// </remarks>
         /// <param name="rotateEncryptionKeyRequest"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
@@ -275,6 +296,30 @@ namespace Lockally.SDK.Api
     }
 
     /// <summary>
+    /// The <see cref="IGetEncryptionStatusApiResponse"/>
+    /// </summary>
+    public interface IGetEncryptionStatusApiResponse : Lockally.SDK.Client.IApiResponse, IOk<Lockally.SDK.Model.GetEncryptionStatus200Response?>, IUnauthorized<Lockally.SDK.Model.Problem?>, IForbidden<Lockally.SDK.Model.Problem?>
+    {
+        /// <summary>
+        /// Returns true if the response is 200 Ok
+        /// </summary>
+        /// <returns></returns>
+        bool IsOk { get; }
+
+        /// <summary>
+        /// Returns true if the response is 401 Unauthorized
+        /// </summary>
+        /// <returns></returns>
+        bool IsUnauthorized { get; }
+
+        /// <summary>
+        /// Returns true if the response is 403 Forbidden
+        /// </summary>
+        /// <returns></returns>
+        bool IsForbidden { get; }
+    }
+
+    /// <summary>
     /// The <see cref="IRotateEncryptionKeyApiResponse"/>
     /// </summary>
     public interface IRotateEncryptionKeyApiResponse : Lockally.SDK.Client.IApiResponse, IBadRequest<Lockally.SDK.Model.Problem?>, IUnauthorized<Lockally.SDK.Model.Problem?>, IForbidden<Lockally.SDK.Model.Problem?>
@@ -387,6 +432,26 @@ namespace Lockally.SDK.Api
         internal void ExecuteOnErrorGetEncryptionKey(Exception exception)
         {
             OnErrorGetEncryptionKey?.Invoke(this, new ExceptionEventArgs(exception));
+        }
+
+        /// <summary>
+        /// The event raised after the server response
+        /// </summary>
+        public event EventHandler<ApiResponseEventArgs>? OnGetEncryptionStatus;
+
+        /// <summary>
+        /// The event raised after an error querying the server
+        /// </summary>
+        public event EventHandler<ExceptionEventArgs>? OnErrorGetEncryptionStatus;
+
+        internal void ExecuteOnGetEncryptionStatus(EncryptionApi.GetEncryptionStatusApiResponse apiResponse)
+        {
+            OnGetEncryptionStatus?.Invoke(this, new ApiResponseEventArgs(apiResponse));
+        }
+
+        internal void ExecuteOnErrorGetEncryptionStatus(Exception exception)
+        {
+            OnErrorGetEncryptionStatus?.Invoke(this, new ExceptionEventArgs(exception));
         }
 
         /// <summary>
@@ -897,7 +962,7 @@ namespace Lockally.SDK.Api
         partial void OnErrorCreateEncryptionKey(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, CreateEncryptionKeyRequest createEncryptionKeyRequest);
 
         /// <summary>
-        /// Upload an encryption key pair 
+        /// Upload an encryption key pair Only the mailbox&#39;s own webmail session may call this; an API key is refused with 403. The private key is sealed under that mailbox&#39;s password, which an administrator never has. &#x60;mailbox_email&#x60;, if sent, must be the caller&#39;s own mailbox. A mailbox that already has a key is starting over: the old key is kept inactive, not destroyed, and the new one starts without a recovery code.
         /// </summary>
         /// <param name="createEncryptionKeyRequest"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
@@ -915,7 +980,7 @@ namespace Lockally.SDK.Api
         }
 
         /// <summary>
-        /// Upload an encryption key pair 
+        /// Upload an encryption key pair Only the mailbox&#39;s own webmail session may call this; an API key is refused with 403. The private key is sealed under that mailbox&#39;s password, which an administrator never has. &#x60;mailbox_email&#x60;, if sent, must be the caller&#39;s own mailbox. A mailbox that already has a key is starting over: the old key is kept inactive, not destroyed, and the new one starts without a recovery code.
         /// </summary>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="createEncryptionKeyRequest"></param>
@@ -1277,7 +1342,7 @@ namespace Lockally.SDK.Api
         partial void OnErrorCreateEncryptionRecovery(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, CreateEncryptionRecoveryRequest createEncryptionRecoveryRequest);
 
         /// <summary>
-        /// Store an encryption recovery blob 
+        /// Store an encryption recovery blob Only the mailbox&#39;s own webmail session may call this; an API key is refused with 403. The private key is sealed under that mailbox&#39;s password, which an administrator never has. &#x60;mailbox_email&#x60;, if sent, must be the caller&#39;s own mailbox. The blob is the private key sealed under a recovery code the browser generated; the code itself is never sent. Replaces any earlier one.
         /// </summary>
         /// <param name="createEncryptionRecoveryRequest"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
@@ -1295,7 +1360,7 @@ namespace Lockally.SDK.Api
         }
 
         /// <summary>
-        /// Store an encryption recovery blob 
+        /// Store an encryption recovery blob Only the mailbox&#39;s own webmail session may call this; an API key is refused with 403. The private key is sealed under that mailbox&#39;s password, which an administrator never has. &#x60;mailbox_email&#x60;, if sent, must be the caller&#39;s own mailbox. The blob is the private key sealed under a recovery code the browser generated; the code itself is never sent. Replaces any earlier one.
         /// </summary>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="createEncryptionRecoveryRequest"></param>
@@ -1624,7 +1689,7 @@ namespace Lockally.SDK.Api
         partial void OnErrorGetEncryptionKey(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string email);
 
         /// <summary>
-        /// Get encryption key for a mailbox 
+        /// Get encryption key for a mailbox Anyone in the workspace gets the public key. The mailbox&#39;s own webmail session also gets its sealed private key, its sealed recovery copy and the recovery state.
         /// </summary>
         /// <param name="email"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
@@ -1642,7 +1707,7 @@ namespace Lockally.SDK.Api
         }
 
         /// <summary>
-        /// Get encryption key for a mailbox 
+        /// Get encryption key for a mailbox Anyone in the workspace gets the public key. The mailbox&#39;s own webmail session also gets its sealed private key, its sealed recovery copy and the recovery state.
         /// </summary>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="email"></param>
@@ -1932,6 +1997,312 @@ namespace Lockally.SDK.Api
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
         }
 
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="apiResponseLocalVar"></param>
+        private void AfterGetEncryptionStatusDefaultImplementation(IGetEncryptionStatusApiResponse apiResponseLocalVar)
+        {
+            bool suppressDefaultLog = false;
+            AfterGetEncryptionStatus(ref suppressDefaultLog, apiResponseLocalVar);
+            if (!suppressDefaultLog)
+                Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="suppressDefaultLog"></param>
+        /// <param name="apiResponseLocalVar"></param>
+        partial void AfterGetEncryptionStatus(ref bool suppressDefaultLog, IGetEncryptionStatusApiResponse apiResponseLocalVar);
+
+        /// <summary>
+        /// Logs exceptions that occur while retrieving the server response
+        /// </summary>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        private void OnErrorGetEncryptionStatusDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar)
+        {
+            bool suppressDefaultLogLocalVar = false;
+            OnErrorGetEncryptionStatus(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar);
+            if (!suppressDefaultLogLocalVar)
+                Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
+        }
+
+        /// <summary>
+        /// A partial method that gives developers a way to provide customized exception handling
+        /// </summary>
+        /// <param name="suppressDefaultLogLocalVar"></param>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        partial void OnErrorGetEncryptionStatus(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar);
+
+        /// <summary>
+        /// End-to-end encryption status for the workspace For administrators: whether the add-on is on, and for each mailbox whether it has a key and a recovery code. Carries no key material.
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IGetEncryptionStatusApiResponse"/>&gt;</returns>
+        public async Task<IGetEncryptionStatusApiResponse?> GetEncryptionStatusOrDefaultAsync(System.Threading.CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return await GetEncryptionStatusAsync(cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// End-to-end encryption status for the workspace For administrators: whether the add-on is on, and for each mailbox whether it has a key and a recovery code. Carries no key material.
+        /// </summary>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IGetEncryptionStatusApiResponse"/>&gt;</returns>
+        public async Task<IGetEncryptionStatusApiResponse> GetEncryptionStatusAsync(System.Threading.CancellationToken cancellationToken = default)
+        {
+            UriBuilder uriBuilderLocalVar = new UriBuilder();
+
+            try
+            {
+                using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
+                {
+                    uriBuilderLocalVar.Host = HttpClient.BaseAddress!.Host;
+                    uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
+                    uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
+                    uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
+                        ? "/v1/encryption/status"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath.TrimEnd('/'), "/v1/encryption/status");
+
+                    List<TokenBase> tokenBaseLocalVars = new List<TokenBase>();
+                    httpRequestMessageLocalVar.RequestUri = uriBuilderLocalVar.Uri;
+
+                    BearerToken bearerTokenLocalVar1 = (BearerToken) await BearerTokenProvider.GetAsync(cancellation: cancellationToken).ConfigureAwait(false);
+
+                    tokenBaseLocalVars.Add(bearerTokenLocalVar1);
+
+                    bearerTokenLocalVar1.UseInHeader(httpRequestMessageLocalVar, "");
+
+                    string[] acceptLocalVars = new string[] {
+                        "application/json",
+                        "application/problem+json"
+                    };
+
+                    IEnumerable<MediaTypeWithQualityHeaderValue> acceptHeaderValuesLocalVar = ClientUtils.SelectHeaderAcceptArray(acceptLocalVars);
+
+                    foreach (var acceptLocalVar in acceptHeaderValuesLocalVar)
+                        httpRequestMessageLocalVar.Headers.Accept.Add(acceptLocalVar);
+
+                    httpRequestMessageLocalVar.Method = HttpMethod.Get;
+
+                    DateTime requestedAtLocalVar = DateTime.UtcNow;
+
+                    using (HttpResponseMessage httpResponseMessageLocalVar = await HttpClient.SendAsync(httpRequestMessageLocalVar, cancellationToken).ConfigureAwait(false))
+                    {
+                        ILogger<GetEncryptionStatusApiResponse> apiResponseLoggerLocalVar = LoggerFactory.CreateLogger<GetEncryptionStatusApiResponse>();
+                        GetEncryptionStatusApiResponse apiResponseLocalVar;
+
+                        switch ((int)httpResponseMessageLocalVar.StatusCode) {
+                            default: {
+                                string responseContentLocalVar = await httpResponseMessageLocalVar.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/encryption/status", requestedAtLocalVar, _jsonSerializerOptions);
+
+                                break;
+                            }
+                        }
+
+                        AfterGetEncryptionStatusDefaultImplementation(apiResponseLocalVar);
+
+                        Events.ExecuteOnGetEncryptionStatus(apiResponseLocalVar);
+
+                        if (apiResponseLocalVar.StatusCode == (HttpStatusCode) 429)
+                            foreach(TokenBase tokenBaseLocalVar in tokenBaseLocalVars)
+                                tokenBaseLocalVar.BeginRateLimit();
+
+                        return apiResponseLocalVar;
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                OnErrorGetEncryptionStatusDefaultImplementation(e, "/v1/encryption/status", uriBuilderLocalVar.Path);
+                Events.ExecuteOnErrorGetEncryptionStatus(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="GetEncryptionStatusApiResponse"/>
+        /// </summary>
+        public partial class GetEncryptionStatusApiResponse : Lockally.SDK.Client.ApiResponse, IGetEncryptionStatusApiResponse
+        {
+            /// <summary>
+            /// The logger
+            /// </summary>
+            public ILogger<GetEncryptionStatusApiResponse> Logger { get; }
+
+            /// <summary>
+            /// The <see cref="GetEncryptionStatusApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="rawContent"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public GetEncryptionStatusApiResponse(ILogger<GetEncryptionStatusApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, string rawContent, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, rawContent, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            /// <summary>
+            /// The <see cref="GetEncryptionStatusApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="contentStream"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public GetEncryptionStatusApiResponse(ILogger<GetEncryptionStatusApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, System.IO.Stream contentStream, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, contentStream, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            partial void OnCreated(global::System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage);
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public bool IsOk => 200 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public Lockally.SDK.Model.GetEncryptionStatus200Response? Ok()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsOk
+                    ? System.Text.Json.JsonSerializer.Deserialize<Lockally.SDK.Model.GetEncryptionStatus200Response>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryOk([NotNullWhen(true)]out Lockally.SDK.Model.GetEncryptionStatus200Response? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Ok();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)200);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public bool IsUnauthorized => 401 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public Lockally.SDK.Model.Problem? Unauthorized()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsUnauthorized
+                    ? System.Text.Json.JsonSerializer.Deserialize<Lockally.SDK.Model.Problem>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryUnauthorized([NotNullWhen(true)]out Lockally.SDK.Model.Problem? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Unauthorized();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)401);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 403 Forbidden
+            /// </summary>
+            /// <returns></returns>
+            public bool IsForbidden => 403 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 403 Forbidden
+            /// </summary>
+            /// <returns></returns>
+            public Lockally.SDK.Model.Problem? Forbidden()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsForbidden
+                    ? System.Text.Json.JsonSerializer.Deserialize<Lockally.SDK.Model.Problem>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 403 Forbidden and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryForbidden([NotNullWhen(true)]out Lockally.SDK.Model.Problem? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Forbidden();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)403);
+                }
+
+                return result != null;
+            }
+
+            private void OnDeserializationErrorDefaultImplementation(Exception exception, HttpStatusCode httpStatusCode)
+            {
+                bool suppressDefaultLog = false;
+                OnDeserializationError(ref suppressDefaultLog, exception, httpStatusCode);
+                if (!suppressDefaultLog)
+                    Logger.LogError(exception, "An error occurred while deserializing the {code} response.", httpStatusCode);
+            }
+
+            partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
+        }
+
         partial void FormatRotateEncryptionKey(RotateEncryptionKeyRequest rotateEncryptionKeyRequest);
 
         /// <summary>
@@ -1992,7 +2363,7 @@ namespace Lockally.SDK.Api
         partial void OnErrorRotateEncryptionKey(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, RotateEncryptionKeyRequest rotateEncryptionKeyRequest);
 
         /// <summary>
-        /// Rotate an encryption key 
+        /// Re-seal an encryption key under a new password Only the mailbox&#39;s own webmail session may call this; an API key is refused with 403. The private key is sealed under that mailbox&#39;s password, which an administrator never has. &#x60;mailbox_email&#x60;, if sent, must be the caller&#39;s own mailbox. The key pair does not change, so every message stays readable.
         /// </summary>
         /// <param name="rotateEncryptionKeyRequest"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
@@ -2010,7 +2381,7 @@ namespace Lockally.SDK.Api
         }
 
         /// <summary>
-        /// Rotate an encryption key 
+        /// Re-seal an encryption key under a new password Only the mailbox&#39;s own webmail session may call this; an API key is refused with 403. The private key is sealed under that mailbox&#39;s password, which an administrator never has. &#x60;mailbox_email&#x60;, if sent, must be the caller&#39;s own mailbox. The key pair does not change, so every message stays readable.
         /// </summary>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="rotateEncryptionKeyRequest"></param>

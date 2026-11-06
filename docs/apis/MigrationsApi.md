@@ -67,7 +67,7 @@ Cancel a running migration
 
 <a id="checkmigrationdns"></a>
 # **CheckMigrationDNS**
-> Object CheckMigrationDNS (Guid id)
+> MigrationDNSCheck CheckMigrationDNS (Guid id)
 
 Check DNS readiness for cutover
 
@@ -80,7 +80,7 @@ Check DNS readiness for cutover
 
 ### Return type
 
-**Object**
+[**MigrationDNSCheck**](MigrationDNSCheck.md)
 
 ### Authorization
 
@@ -96,6 +96,7 @@ Check DNS readiness for cutover
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | DNS readiness check results |  -  |
+| **400** | The id is not a UUID, or the migration has no mapped destination mailboxes to check. |  -  |
 | **401** | Missing, malformed, or invalid API key. |  -  |
 | **403** | API key lacks the required scope. |  -  |
 | **404** | Resource not found under the calling tenant. |  -  |

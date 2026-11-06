@@ -62,5 +62,14 @@ namespace Lockally.SDK.Test.Model
         {
             // TODO unit test for the property 'Messages'
         }
+
+        /// <summary>
+        /// Test the property 'Variables'
+        /// </summary>
+        [Fact]
+        public void VariablesTest()
+        {
+            // TODO unit test for the property 'Variables'
+        }
     }
 }

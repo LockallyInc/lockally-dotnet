@@ -34,14 +34,14 @@ namespace Lockally.SDK.Model
         /// <summary>
         /// Initializes a new instance of the <see cref="RotateEncryptionKeyRequest" /> class.
         /// </summary>
-        /// <param name="mailboxEmail">mailboxEmail</param>
         /// <param name="encryptedPrivateKey">encryptedPrivateKey</param>
+        /// <param name="mailboxEmail">mailboxEmail</param>
         /// <param name="kdfParams">kdfParams</param>
         [JsonConstructor]
-        public RotateEncryptionKeyRequest(string mailboxEmail, string encryptedPrivateKey, Option<Object?> kdfParams = default)
+        public RotateEncryptionKeyRequest(string encryptedPrivateKey, Option<string?> mailboxEmail = default, Option<Object?> kdfParams = default)
         {
-            MailboxEmail = mailboxEmail;
             EncryptedPrivateKey = encryptedPrivateKey;
+            MailboxEmailOption = mailboxEmail;
             KdfParamsOption = kdfParams;
             OnCreated();
         }
@@ -49,16 +49,23 @@ namespace Lockally.SDK.Model
         partial void OnCreated();
 
         /// <summary>
-        /// Gets or Sets MailboxEmail
-        /// </summary>
-        [JsonPropertyName("mailbox_email")]
-        public string MailboxEmail { get; set; }
-
-        /// <summary>
         /// Gets or Sets EncryptedPrivateKey
         /// </summary>
         [JsonPropertyName("encrypted_private_key")]
         public string EncryptedPrivateKey { get; set; }
+
+        /// <summary>
+        /// Used to track the state of MailboxEmail
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> MailboxEmailOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets MailboxEmail
+        /// </summary>
+        [JsonPropertyName("mailbox_email")]
+        public string? MailboxEmail { get { return this.MailboxEmailOption.Value; } set { this.MailboxEmailOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of KdfParams
@@ -81,8 +88,8 @@ namespace Lockally.SDK.Model
         {
             StringBuilder sb = new StringBuilder();
             sb.Append("class RotateEncryptionKeyRequest {\n");
-            sb.Append("  MailboxEmail: ").Append(MailboxEmail).Append("\n");
             sb.Append("  EncryptedPrivateKey: ").Append(EncryptedPrivateKey).Append("\n");
+            sb.Append("  MailboxEmail: ").Append(MailboxEmail).Append("\n");
             sb.Append("  KdfParams: ").Append(KdfParams).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
@@ -121,8 +128,8 @@ namespace Lockally.SDK.Model
 
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
-            Option<string?> mailboxEmail = default;
             Option<string?> encryptedPrivateKey = default;
+            Option<string?> mailboxEmail = default;
             Option<Object?> kdfParams = default;
 
             while (utf8JsonReader.Read())
@@ -140,11 +147,11 @@ namespace Lockally.SDK.Model
 
                     switch (localVarJsonPropertyName)
                     {
-                        case "mailbox_email":
-                            mailboxEmail = new Option<string?>(utf8JsonReader.GetString()!);
-                            break;
                         case "encrypted_private_key":
                             encryptedPrivateKey = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
+                        case "mailbox_email":
+                            mailboxEmail = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         case "kdf_params":
                             kdfParams = new Option<Object?>(JsonSerializer.Deserialize<Object>(ref utf8JsonReader, jsonSerializerOptions)!);
@@ -155,22 +162,19 @@ namespace Lockally.SDK.Model
                 }
             }
 
-            if (!mailboxEmail.IsSet)
-                throw new ArgumentException("Property is required for class RotateEncryptionKeyRequest.", nameof(mailboxEmail));
-
             if (!encryptedPrivateKey.IsSet)
                 throw new ArgumentException("Property is required for class RotateEncryptionKeyRequest.", nameof(encryptedPrivateKey));
-
-            if (mailboxEmail.IsSet && mailboxEmail.Value == null)
-                throw new ArgumentNullException(nameof(mailboxEmail), "Property is not nullable for class RotateEncryptionKeyRequest.");
 
             if (encryptedPrivateKey.IsSet && encryptedPrivateKey.Value == null)
                 throw new ArgumentNullException(nameof(encryptedPrivateKey), "Property is not nullable for class RotateEncryptionKeyRequest.");
 
+            if (mailboxEmail.IsSet && mailboxEmail.Value == null)
+                throw new ArgumentNullException(nameof(mailboxEmail), "Property is not nullable for class RotateEncryptionKeyRequest.");
+
             if (kdfParams.IsSet && kdfParams.Value == null)
                 throw new ArgumentNullException(nameof(kdfParams), "Property is not nullable for class RotateEncryptionKeyRequest.");
 
-            return new RotateEncryptionKeyRequest(mailboxEmail.Value!, encryptedPrivateKey.Value!, kdfParams);
+            return new RotateEncryptionKeyRequest(encryptedPrivateKey.Value!, mailboxEmail, kdfParams);
         }
 
         /// <summary>
@@ -197,18 +201,19 @@ namespace Lockally.SDK.Model
         /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, RotateEncryptionKeyRequest rotateEncryptionKeyRequest, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (rotateEncryptionKeyRequest.MailboxEmail == null)
-                throw new ArgumentNullException(nameof(rotateEncryptionKeyRequest.MailboxEmail), "Property is required for class RotateEncryptionKeyRequest.");
-
             if (rotateEncryptionKeyRequest.EncryptedPrivateKey == null)
                 throw new ArgumentNullException(nameof(rotateEncryptionKeyRequest.EncryptedPrivateKey), "Property is required for class RotateEncryptionKeyRequest.");
+
+            if (rotateEncryptionKeyRequest.MailboxEmailOption.IsSet && rotateEncryptionKeyRequest.MailboxEmail == null)
+                throw new ArgumentNullException(nameof(rotateEncryptionKeyRequest.MailboxEmail), "Property is required for class RotateEncryptionKeyRequest.");
 
             if (rotateEncryptionKeyRequest.KdfParamsOption.IsSet && rotateEncryptionKeyRequest.KdfParams == null)
                 throw new ArgumentNullException(nameof(rotateEncryptionKeyRequest.KdfParams), "Property is required for class RotateEncryptionKeyRequest.");
 
-            writer.WriteString("mailbox_email", rotateEncryptionKeyRequest.MailboxEmail);
-
             writer.WriteString("encrypted_private_key", rotateEncryptionKeyRequest.EncryptedPrivateKey);
+
+            if (rotateEncryptionKeyRequest.MailboxEmailOption.IsSet)
+                writer.WriteString("mailbox_email", rotateEncryptionKeyRequest.MailboxEmail);
 
             if (rotateEncryptionKeyRequest.KdfParamsOption.IsSet)
             {

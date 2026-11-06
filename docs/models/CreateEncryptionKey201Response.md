@@ -7,6 +7,7 @@ Name | Type | Description | Notes
 **Id** | **Guid** |  | [optional] 
 **MailboxId** | **Guid** |  | [optional] 
 **CreatedAt** | **DateTime** |  | [optional] 
+**ReplacedOld** | **bool** |  | [optional] 
 
 [[Back to Model list]](../../README.md#documentation-for-models) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to README]](../../README.md)
 

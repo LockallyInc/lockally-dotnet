@@ -35,10 +35,12 @@ namespace Lockally.SDK.Model
         /// Initializes a new instance of the <see cref="SendEmailBatchRequest" /> class.
         /// </summary>
         /// <param name="messages">messages</param>
+        /// <param name="variables">Template variables every message in the batch inherits. Each message&#39;s own &#x60;variables&#x60; override these key by key, so shared values are written once and per-recipient ones stay per-recipient.  Without this, a 500-message batch repeats every shared variable 500 times: most of the payload, and 500 places for one of them to differ by a typo. </param>
         [JsonConstructor]
-        public SendEmailBatchRequest(List<SendMessage> messages)
+        public SendEmailBatchRequest(List<SendMessage> messages, Option<Dictionary<string, string>?> variables = default)
         {
             Messages = messages;
+            VariablesOption = variables;
             OnCreated();
         }
 
@@ -51,6 +53,20 @@ namespace Lockally.SDK.Model
         public List<SendMessage> Messages { get; set; }
 
         /// <summary>
+        /// Used to track the state of Variables
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<Dictionary<string, string>?> VariablesOption { get; private set; }
+
+        /// <summary>
+        /// Template variables every message in the batch inherits. Each message&#39;s own &#x60;variables&#x60; override these key by key, so shared values are written once and per-recipient ones stay per-recipient.  Without this, a 500-message batch repeats every shared variable 500 times: most of the payload, and 500 places for one of them to differ by a typo. 
+        /// </summary>
+        /// <value>Template variables every message in the batch inherits. Each message&#39;s own &#x60;variables&#x60; override these key by key, so shared values are written once and per-recipient ones stay per-recipient.  Without this, a 500-message batch repeats every shared variable 500 times: most of the payload, and 500 places for one of them to differ by a typo. </value>
+        [JsonPropertyName("variables")]
+        public Dictionary<string, string>? Variables { get { return this.VariablesOption.Value; } set { this.VariablesOption = new(value); } }
+
+        /// <summary>
         /// Returns the string presentation of the object
         /// </summary>
         /// <returns>String presentation of the object</returns>
@@ -59,6 +75,7 @@ namespace Lockally.SDK.Model
             StringBuilder sb = new StringBuilder();
             sb.Append("class SendEmailBatchRequest {\n");
             sb.Append("  Messages: ").Append(Messages).Append("\n");
+            sb.Append("  Variables: ").Append(Variables).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -97,6 +114,7 @@ namespace Lockally.SDK.Model
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
             Option<List<SendMessage>?> messages = default;
+            Option<Dictionary<string, string>?> variables = default;
 
             while (utf8JsonReader.Read())
             {
@@ -116,6 +134,9 @@ namespace Lockally.SDK.Model
                         case "messages":
                             messages = new Option<List<SendMessage>?>(JsonSerializer.Deserialize<List<SendMessage>>(ref utf8JsonReader, jsonSerializerOptions)!);
                             break;
+                        case "variables":
+                            variables = new Option<Dictionary<string, string>?>(JsonSerializer.Deserialize<Dictionary<string, string>>(ref utf8JsonReader, jsonSerializerOptions)!);
+                            break;
                         default:
                             break;
                     }
@@ -128,7 +149,10 @@ namespace Lockally.SDK.Model
             if (messages.IsSet && messages.Value == null)
                 throw new ArgumentNullException(nameof(messages), "Property is not nullable for class SendEmailBatchRequest.");
 
-            return new SendEmailBatchRequest(messages.Value!);
+            if (variables.IsSet && variables.Value == null)
+                throw new ArgumentNullException(nameof(variables), "Property is not nullable for class SendEmailBatchRequest.");
+
+            return new SendEmailBatchRequest(messages.Value!, variables);
         }
 
         /// <summary>
@@ -158,8 +182,16 @@ namespace Lockally.SDK.Model
             if (sendEmailBatchRequest.Messages == null)
                 throw new ArgumentNullException(nameof(sendEmailBatchRequest.Messages), "Property is required for class SendEmailBatchRequest.");
 
+            if (sendEmailBatchRequest.VariablesOption.IsSet && sendEmailBatchRequest.Variables == null)
+                throw new ArgumentNullException(nameof(sendEmailBatchRequest.Variables), "Property is required for class SendEmailBatchRequest.");
+
             writer.WritePropertyName("messages");
             JsonSerializer.Serialize(writer, sendEmailBatchRequest.Messages, jsonSerializerOptions);
+            if (sendEmailBatchRequest.VariablesOption.IsSet)
+            {
+                writer.WritePropertyName("variables");
+                JsonSerializer.Serialize(writer, sendEmailBatchRequest.Variables, jsonSerializerOptions);
+            }
         }
     }
 }

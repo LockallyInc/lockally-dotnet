@@ -52,6 +52,19 @@ namespace Lockally.SDK.Test.Api
         }
 
         /// <summary>
+        /// Test BulkUpsertExternalContacts
+        /// </summary>
+        [Fact (Skip = "not implemented")]
+        public async Task BulkUpsertExternalContactsAsyncTest()
+        {
+            string varSystem = default!;
+            BulkUpsertExternalContactsRequest bulkUpsertExternalContactsRequest = default!;
+            var response = await _instance.BulkUpsertExternalContactsAsync(varSystem, bulkUpsertExternalContactsRequest);
+            var model = response.Ok();
+            Assert.IsType<BulkUpsertExternalContacts200Response>(model);
+        }
+
+        /// <summary>
         /// Test CreateContact
         /// </summary>
         [Fact (Skip = "not implemented")]
@@ -71,6 +84,17 @@ namespace Lockally.SDK.Test.Api
         {
             Guid id = default!;
             await _instance.DeleteContactAsync(id);
+        }
+
+        /// <summary>
+        /// Test DeleteExternalContact
+        /// </summary>
+        [Fact (Skip = "not implemented")]
+        public async Task DeleteExternalContactAsyncTest()
+        {
+            string varSystem = default!;
+            string externalId = default!;
+            await _instance.DeleteExternalContactAsync(varSystem, externalId);
         }
 
         /// <summary>
@@ -98,6 +122,19 @@ namespace Lockally.SDK.Test.Api
         }
 
         /// <summary>
+        /// Test GetExternalContact
+        /// </summary>
+        [Fact (Skip = "not implemented")]
+        public async Task GetExternalContactAsyncTest()
+        {
+            string varSystem = default!;
+            string externalId = default!;
+            var response = await _instance.GetExternalContactAsync(varSystem, externalId);
+            var model = response.Ok();
+            Assert.IsType<Contact>(model);
+        }
+
+        /// <summary>
         /// Test ListContacts
         /// </summary>
         [Fact (Skip = "not implemented")]
@@ -122,6 +159,20 @@ namespace Lockally.SDK.Test.Api
             Guid id = default!;
             UpdateContactRequest updateContactRequest = default!;
             var response = await _instance.UpdateContactAsync(id, updateContactRequest);
+            var model = response.Ok();
+            Assert.IsType<Contact>(model);
+        }
+
+        /// <summary>
+        /// Test UpsertExternalContact
+        /// </summary>
+        [Fact (Skip = "not implemented")]
+        public async Task UpsertExternalContactAsyncTest()
+        {
+            string varSystem = default!;
+            string externalId = default!;
+            ExternalContactInput externalContactInput = default!;
+            var response = await _instance.UpsertExternalContactAsync(varSystem, externalId, externalContactInput);
             var model = response.Ok();
             Assert.IsType<Contact>(model);
         }

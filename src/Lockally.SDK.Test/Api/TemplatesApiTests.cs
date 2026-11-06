@@ -91,7 +91,9 @@ namespace Lockally.SDK.Test.Api
         [Fact (Skip = "not implemented")]
         public async Task ListTemplatesAsyncTest()
         {
-            var response = await _instance.ListTemplatesAsync();
+            Client.Option<string> sort = default!;
+            Client.Option<string> order = default!;
+            var response = await _instance.ListTemplatesAsync(sort, order);
             var model = response.Ok();
             Assert.IsType<ListTemplates200Response>(model);
         }

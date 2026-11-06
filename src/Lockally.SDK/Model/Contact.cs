@@ -48,8 +48,10 @@ namespace Lockally.SDK.Model
         /// <param name="source">source</param>
         /// <param name="department">department</param>
         /// <param name="role">role</param>
+        /// <param name="externalSystem">The system that owns this contact&#39;s external id. Absent on contacts made by hand.</param>
+        /// <param name="externalId">The contact&#39;s id in &#x60;external_system&#x60;. Absent on contacts made by hand.</param>
         [JsonConstructor]
-        public Contact(Guid id, Guid tenantId, string name, string email, ContactTypeEnum contactType, string status, DateTime createdAt, DateTime updatedAt, Option<string?> phone = default, Option<string?> company = default, Option<string?> notes = default, Option<string?> source = default, Option<string?> department = default, Option<string?> role = default)
+        public Contact(Guid id, Guid tenantId, string name, string email, ContactTypeEnum contactType, string status, DateTime createdAt, DateTime updatedAt, Option<string?> phone = default, Option<string?> company = default, Option<string?> notes = default, Option<string?> source = default, Option<string?> department = default, Option<string?> role = default, Option<string?> externalSystem = default, Option<string?> externalId = default)
         {
             Id = id;
             TenantId = tenantId;
@@ -65,6 +67,8 @@ namespace Lockally.SDK.Model
             SourceOption = source;
             DepartmentOption = department;
             RoleOption = role;
+            ExternalSystemOption = externalSystem;
+            ExternalIdOption = externalId;
             OnCreated();
         }
 
@@ -263,6 +267,34 @@ namespace Lockally.SDK.Model
         public string? Role { get { return this.RoleOption.Value; } set { this.RoleOption = new(value); } }
 
         /// <summary>
+        /// Used to track the state of ExternalSystem
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> ExternalSystemOption { get; private set; }
+
+        /// <summary>
+        /// The system that owns this contact&#39;s external id. Absent on contacts made by hand.
+        /// </summary>
+        /// <value>The system that owns this contact&#39;s external id. Absent on contacts made by hand.</value>
+        [JsonPropertyName("external_system")]
+        public string? ExternalSystem { get { return this.ExternalSystemOption.Value; } set { this.ExternalSystemOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of ExternalId
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> ExternalIdOption { get; private set; }
+
+        /// <summary>
+        /// The contact&#39;s id in &#x60;external_system&#x60;. Absent on contacts made by hand.
+        /// </summary>
+        /// <value>The contact&#39;s id in &#x60;external_system&#x60;. Absent on contacts made by hand.</value>
+        [JsonPropertyName("external_id")]
+        public string? ExternalId { get { return this.ExternalIdOption.Value; } set { this.ExternalIdOption = new(value); } }
+
+        /// <summary>
         /// Returns the string presentation of the object
         /// </summary>
         /// <returns>String presentation of the object</returns>
@@ -284,6 +316,8 @@ namespace Lockally.SDK.Model
             sb.Append("  Source: ").Append(Source).Append("\n");
             sb.Append("  Department: ").Append(Department).Append("\n");
             sb.Append("  Role: ").Append(Role).Append("\n");
+            sb.Append("  ExternalSystem: ").Append(ExternalSystem).Append("\n");
+            sb.Append("  ExternalId: ").Append(ExternalId).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -345,6 +379,8 @@ namespace Lockally.SDK.Model
             Option<string?> source = default;
             Option<string?> department = default;
             Option<string?> role = default;
+            Option<string?> externalSystem = default;
+            Option<string?> externalId = default;
 
             while (utf8JsonReader.Read())
             {
@@ -404,6 +440,12 @@ namespace Lockally.SDK.Model
                             break;
                         case "role":
                             role = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
+                        case "external_system":
+                            externalSystem = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
+                        case "external_id":
+                            externalId = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         default:
                             break;
@@ -477,7 +519,13 @@ namespace Lockally.SDK.Model
             if (role.IsSet && role.Value == null)
                 throw new ArgumentNullException(nameof(role), "Property is not nullable for class Contact.");
 
-            return new Contact(id.Value!.Value!, tenantId.Value!.Value!, name.Value!, email.Value!, contactType.Value!.Value!, status.Value!, createdAt.Value!.Value!, updatedAt.Value!.Value!, phone, company, notes, source, department, role);
+            if (externalSystem.IsSet && externalSystem.Value == null)
+                throw new ArgumentNullException(nameof(externalSystem), "Property is not nullable for class Contact.");
+
+            if (externalId.IsSet && externalId.Value == null)
+                throw new ArgumentNullException(nameof(externalId), "Property is not nullable for class Contact.");
+
+            return new Contact(id.Value!.Value!, tenantId.Value!.Value!, name.Value!, email.Value!, contactType.Value!.Value!, status.Value!, createdAt.Value!.Value!, updatedAt.Value!.Value!, phone, company, notes, source, department, role, externalSystem, externalId);
         }
 
         /// <summary>
@@ -531,6 +579,12 @@ namespace Lockally.SDK.Model
             if (contact.RoleOption.IsSet && contact.Role == null)
                 throw new ArgumentNullException(nameof(contact.Role), "Property is required for class Contact.");
 
+            if (contact.ExternalSystemOption.IsSet && contact.ExternalSystem == null)
+                throw new ArgumentNullException(nameof(contact.ExternalSystem), "Property is required for class Contact.");
+
+            if (contact.ExternalIdOption.IsSet && contact.ExternalId == null)
+                throw new ArgumentNullException(nameof(contact.ExternalId), "Property is required for class Contact.");
+
             writer.WriteString("id", contact.Id);
 
             writer.WriteString("tenant_id", contact.TenantId);
@@ -564,6 +618,12 @@ namespace Lockally.SDK.Model
 
             if (contact.RoleOption.IsSet)
                 writer.WriteString("role", contact.Role);
+
+            if (contact.ExternalSystemOption.IsSet)
+                writer.WriteString("external_system", contact.ExternalSystem);
+
+            if (contact.ExternalIdOption.IsSet)
+                writer.WriteString("external_id", contact.ExternalId);
         }
     }
 }

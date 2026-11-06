@@ -571,13 +571,19 @@ namespace Lockally.SDK.Api
     /// <summary>
     /// The <see cref="ICheckMigrationDNSApiResponse"/>
     /// </summary>
-    public interface ICheckMigrationDNSApiResponse : Lockally.SDK.Client.IApiResponse, IOk<Object?>, IUnauthorized<Lockally.SDK.Model.Problem?>, IForbidden<Lockally.SDK.Model.Problem?>, INotFound<Lockally.SDK.Model.Problem?>, IServiceUnavailable<Lockally.SDK.Model.Problem?>
+    public interface ICheckMigrationDNSApiResponse : Lockally.SDK.Client.IApiResponse, IOk<Lockally.SDK.Model.MigrationDNSCheck?>, IBadRequest<Lockally.SDK.Model.Problem?>, IUnauthorized<Lockally.SDK.Model.Problem?>, IForbidden<Lockally.SDK.Model.Problem?>, INotFound<Lockally.SDK.Model.Problem?>, IServiceUnavailable<Lockally.SDK.Model.Problem?>
     {
         /// <summary>
         /// Returns true if the response is 200 Ok
         /// </summary>
         /// <returns></returns>
         bool IsOk { get; }
+
+        /// <summary>
+        /// Returns true if the response is 400 BadRequest
+        /// </summary>
+        /// <returns></returns>
+        bool IsBadRequest { get; }
 
         /// <summary>
         /// Returns true if the response is 401 Unauthorized
@@ -2449,11 +2455,11 @@ namespace Lockally.SDK.Api
             /// Deserializes the response if the response is 200 Ok
             /// </summary>
             /// <returns></returns>
-            public Object? Ok()
+            public Lockally.SDK.Model.MigrationDNSCheck? Ok()
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsOk
-                    ? System.Text.Json.JsonSerializer.Deserialize<Object>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Lockally.SDK.Model.MigrationDNSCheck>(RawContent, _jsonSerializerOptions)
                     : null;
             }
 
@@ -2462,7 +2468,7 @@ namespace Lockally.SDK.Api
             /// </summary>
             /// <param name="result"></param>
             /// <returns></returns>
-            public bool TryOk([NotNullWhen(true)]out Object? result)
+            public bool TryOk([NotNullWhen(true)]out Lockally.SDK.Model.MigrationDNSCheck? result)
             {
                 result = null;
 
@@ -2472,6 +2478,44 @@ namespace Lockally.SDK.Api
                 } catch (Exception e)
                 {
                     OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)200);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 400 BadRequest
+            /// </summary>
+            /// <returns></returns>
+            public bool IsBadRequest => 400 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 400 BadRequest
+            /// </summary>
+            /// <returns></returns>
+            public Lockally.SDK.Model.Problem? BadRequest()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsBadRequest
+                    ? System.Text.Json.JsonSerializer.Deserialize<Lockally.SDK.Model.Problem>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 400 BadRequest and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryBadRequest([NotNullWhen(true)]out Lockally.SDK.Model.Problem? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = BadRequest();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)400);
                 }
 
                 return result != null;

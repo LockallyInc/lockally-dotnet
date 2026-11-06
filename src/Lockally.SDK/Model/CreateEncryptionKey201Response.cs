@@ -37,12 +37,14 @@ namespace Lockally.SDK.Model
         /// <param name="id">id</param>
         /// <param name="mailboxId">mailboxId</param>
         /// <param name="createdAt">createdAt</param>
+        /// <param name="replacedOld">replacedOld</param>
         [JsonConstructor]
-        public CreateEncryptionKey201Response(Option<Guid?> id = default, Option<Guid?> mailboxId = default, Option<DateTime?> createdAt = default)
+        public CreateEncryptionKey201Response(Option<Guid?> id = default, Option<Guid?> mailboxId = default, Option<DateTime?> createdAt = default, Option<bool?> replacedOld = default)
         {
             IdOption = id;
             MailboxIdOption = mailboxId;
             CreatedAtOption = createdAt;
+            ReplacedOldOption = replacedOld;
             OnCreated();
         }
 
@@ -88,6 +90,19 @@ namespace Lockally.SDK.Model
         public DateTime? CreatedAt { get { return this.CreatedAtOption.Value; } set { this.CreatedAtOption = new(value); } }
 
         /// <summary>
+        /// Used to track the state of ReplacedOld
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<bool?> ReplacedOldOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets ReplacedOld
+        /// </summary>
+        [JsonPropertyName("replaced_old")]
+        public bool? ReplacedOld { get { return this.ReplacedOldOption.Value; } set { this.ReplacedOldOption = new(value); } }
+
+        /// <summary>
         /// Returns the string presentation of the object
         /// </summary>
         /// <returns>String presentation of the object</returns>
@@ -98,6 +113,7 @@ namespace Lockally.SDK.Model
             sb.Append("  Id: ").Append(Id).Append("\n");
             sb.Append("  MailboxId: ").Append(MailboxId).Append("\n");
             sb.Append("  CreatedAt: ").Append(CreatedAt).Append("\n");
+            sb.Append("  ReplacedOld: ").Append(ReplacedOld).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -143,6 +159,7 @@ namespace Lockally.SDK.Model
             Option<Guid?> id = default;
             Option<Guid?> mailboxId = default;
             Option<DateTime?> createdAt = default;
+            Option<bool?> replacedOld = default;
 
             while (utf8JsonReader.Read())
             {
@@ -168,6 +185,9 @@ namespace Lockally.SDK.Model
                         case "created_at":
                             createdAt = new Option<DateTime?>(JsonSerializer.Deserialize<DateTime>(ref utf8JsonReader, jsonSerializerOptions));
                             break;
+                        case "replaced_old":
+                            replacedOld = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
+                            break;
                         default:
                             break;
                     }
@@ -183,7 +203,10 @@ namespace Lockally.SDK.Model
             if (createdAt.IsSet && createdAt.Value == null)
                 throw new ArgumentNullException(nameof(createdAt), "Property is not nullable for class CreateEncryptionKey201Response.");
 
-            return new CreateEncryptionKey201Response(id, mailboxId, createdAt);
+            if (replacedOld.IsSet && replacedOld.Value == null)
+                throw new ArgumentNullException(nameof(replacedOld), "Property is not nullable for class CreateEncryptionKey201Response.");
+
+            return new CreateEncryptionKey201Response(id, mailboxId, createdAt, replacedOld);
         }
 
         /// <summary>
@@ -218,6 +241,9 @@ namespace Lockally.SDK.Model
 
             if (createEncryptionKey201Response.CreatedAtOption.IsSet)
                 writer.WriteString("created_at", createEncryptionKey201Response.CreatedAtOption.Value!.Value.ToString(CreatedAtFormat));
+
+            if (createEncryptionKey201Response.ReplacedOldOption.IsSet)
+                writer.WriteBoolean("replaced_old", createEncryptionKey201Response.ReplacedOldOption.Value!.Value);
         }
     }
 }
